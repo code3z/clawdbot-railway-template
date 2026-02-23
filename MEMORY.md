@@ -15,6 +15,17 @@ Keep this tight. Details belong in project docs, not here.
 - **Project docs**: `polymarket/README.md` (architecture), `polymarket/LEARNINGS.md` (API gotchas)
 - **Research docs**: `polymarket/STRATEGY_IDEAS.md`, `polymarket/SKILLS.md`, `polymarket/EDGE_ASSESSMENT.md`
 
+## Active Paper Trades (as of 2026-02-23 ~3:30 PM ET)
+- 4 trades open for Feb 24 targets — settler runs 9 AM tomorrow
+- System: ensemble_trader.py + paper_trading SDK, SQLite at polymarket/paper_trades/paper_trades.db
+- Forecast logger running 4x/day (launchctl), capturing 20+ sources per city
+
+## Key Architecture (2026-02-23)
+- **forecast_logger.py**: NWS + TWC + Foreca + 16 OM models + 4 ensembles (GFS/ECMWF/ICON/GEM) for all 19 cities
+- **ensemble_trader.py**: Real percentile interpolation for P(yes), 100% coverage required, best-edge-per-city
+- **paper_trading/**: SQLite SDK with Kelly sizing, calibration tracking, Brier score
+- **Kalshi series active**: boston/chicago/dc/houston/lasvegas/miami/minneapolis/okc/philly/sanantonio/sfo/seattle/austin
+
 ## Lessons That Cost Money
 1. **Kalshi Create Order accepts both `yes_price` and `no_price`.** Use `yes_price` for YES orders, `no_price` for NO orders. Market response `no_ask` = price to buy NO → pass as `no_price`. No conversion. (See LEARNINGS.md for full history of getting this wrong.)
 2. **Timezone bugs are silent killers**. UTC midnight ≠ local midnight. Each city needs its own IANA timezone. Code runs fine, places orders, on WRONG data.
