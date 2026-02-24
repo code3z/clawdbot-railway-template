@@ -15,6 +15,24 @@ If it's been a while since last Simmer check:
 5. Check opportunities — high divergence, new markets
 6. Update lastSimmerCheck timestamp in memory/heartbeat-state.json
 
+## CLI Confirmed-High Trader (one-time validation task)
+This task auto-expires once done. Remove after completion.
+
+First run fires at 4pm ET today (Feb 24). After that, count 8 heartbeats, then:
+1. Check `polymarket/forecast_logs/cli_trader_et.stdout.log` (and ct/mt/pt)
+2. Check `polymarket/forecast_logs/cli_trader_errors.jsonl` for any errors
+3. Check `polymarket/forecast_logs/cli_trader_YYYYMMDD.jsonl` for trade signals/results
+4. Fix any errors found
+5. Once logs look clean: notify Ian and ask to approve switching from --paper to LIVE
+   (remove --paper from plists com.trady.cli-trader-{et,ct,mt,pt}, reload launchctl)
+6. After live is approved and running: add a parallel paper version
+   (duplicate all 4 plists as com.trady.cli-paper-{et,ct,mt,pt} with --paper flag,
+   same schedule, so we can compare live vs paper results)
+7. Remove this section from HEARTBEAT.md
+
+Note: agents currently run with --paper flag. DO NOT switch to live without Ian's approval.
+Houston is flagged skip_live=True (station verification pending — KIAH vs KHOU).
+
 ## Notes
 - Paper trades settled by launchctl: `com.trady.trade-settler` (9 AM ET daily)
 - Forecast logged by: `com.trady.forecast-logger` (6 AM/noon/6 PM/midnight ET)
