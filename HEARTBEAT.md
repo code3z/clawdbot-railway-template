@@ -37,6 +37,7 @@ Houston is flagged skip_live=True (station verification pending — KIAH vs KHOU
 - Paper trades settled by launchctl: `com.trady.trade-settler` (9 AM ET daily)
 - Forecast logged by: `com.trady.forecast-logger` (6 AM/noon/6 PM/midnight ET)
 - Ensemble trader: `com.trady.ensemble-trader` (6:30 AM/12:30 PM/6:30 PM/12:30 AM ET)
+- Intraday ensemble: `com.trady.intraday-ensemble-trader` (6:32 AM/12:32 PM/6:32 PM/12:32 AM ET)
 - DB: `polymarket/paper_trades/paper_trades.db`
 - Logs: `polymarket/forecast_logs/forecasts.jsonl` and `cli_actuals.jsonl`
 - First real paper trade results: Feb 25 9 AM settler run (trades target Feb 24)

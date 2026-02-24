@@ -15,10 +15,10 @@ Keep this tight. Details belong in project docs, not here.
 - **Project docs**: `polymarket/README.md` (architecture), `polymarket/LEARNINGS.md` (API gotchas)
 - **Research docs**: `polymarket/STRATEGY_IDEAS.md`, `polymarket/SKILLS.md`, `polymarket/EDGE_ASSESSMENT.md`
 
-## Active Paper Trades (as of 2026-02-23 ~3:30 PM ET)
-- 4 trades open for Feb 24 targets — settler runs 9 AM tomorrow
-- System: ensemble_trader.py + paper_trading SDK, SQLite at polymarket/paper_trades/paper_trades.db
-- Forecast logger running 4x/day (launchctl), capturing 20+ sources per city
+## Active Paper Trades (as of 2026-02-23 ~11:50 PM ET)
+- 4 weather trades (ensemble_gfs_ecmwf_icon_gem) for Feb 24 — settler runs 9 AM Feb 25
+- 20 NO bias trades (kalshi_no_bias) — all Trump SotU mention markets, resolve March 2
+- DB: polymarket/paper_trades/paper_trades.db
 
 ## Key Architecture (2026-02-23)
 - **forecast_logger.py**: NWS + TWC + Foreca + 16 OM models + 4 ensembles (GFS/ECMWF/ICON/GEM) for all 19 cities
@@ -44,3 +44,8 @@ Keep this tight. Details belong in project docs, not here.
 - Count/activity markets (Poisson models) — TSA, tweet counts
 - Resolution rules arbitrage — nobody reads the fine print
 - See `polymarket/STRATEGY_IDEAS.md` for full list
+
+
+## Browser Access
+When I cannot access the browser, ask Ian for help first.
+If he doesn't respond by the next heartbeat, continue without him.
