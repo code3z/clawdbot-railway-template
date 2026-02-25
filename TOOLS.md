@@ -46,6 +46,14 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
   - minneapolis=105037649, nola=104335045, sanantonio=104726206, dallas=104684888
 - **Status**: ✅ Live in forecast_logger.py as of 2026-02-23
 
+## Visual Crossing Weather API — ✅ LIVE
+- **Key**: `6S3FUZ7XZRW2BGWNJQQCT8SRQ`
+- **Endpoint**: `GET https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{lat,lon}/next7days`
+- **Params**: `key=KEY&unitGroup=us&elements=datetime,tempmax,tempmin&include=days&contentType=json`
+- **Fields**: `days[].datetime` (local YYYY-MM-DD), `days[].tempmax`, `days[].tempmin` (°F)
+- **Status**: ✅ Added to forecast_logger.py 2026-02-25 as `vc_high`/`vc_low`
+- **Docs**: https://www.visualcrossing.com/resources/documentation/weather-api/timeline-weather-api/
+
 ## TWC (The Weather Channel) Direct API — ✅ LIVE
 - **Key**: `adb6c94f2ec944c4b6c94f2ec9d4c47b` (trial key, full access)
 - **Endpoint**: `GET https://api.weather.com/v3/wx/forecast/daily/5day`
