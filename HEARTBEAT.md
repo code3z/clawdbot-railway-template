@@ -1,10 +1,21 @@
 # HEARTBEAT.md
 
+
+## Active Sub-Agents (check every heartbeat)
+Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
+- Is it still running or has it completed without announcing?
+- If status shows it's done but no announcement came, check its transcript and report results
+
+---
+
 ## Weather Trading (every heartbeat)
 1. Check `polymarket/forecast_logs/` for recent entries and errors
 2. Check paper trades DB for any newly settled trades
 3. Check launchctl agents for errors: `launchctl list | grep trady`
 4. If any trades resolved (status != pending), update Ian with P&L
+5. **NBM trader** (new 2026-02-27): check `forecast_logs/nbm_forecast_trader.stdout.log`
+   - Requires forecast_logger to have run first (NBM data in forecasts.jsonl)
+   - Model: truncated normal, σ=XND/1.28, P∈[10%,90%], edge≥8%, $3 max/trade
 
 ## Simmer (a few times per day)
 If it's been a while since last Simmer check:
@@ -15,29 +26,70 @@ If it's been a while since last Simmer check:
 5. Check opportunities — high divergence, new markets
 6. Update lastSimmerCheck timestamp in memory/heartbeat-state.json
 
-## CLI Confirmed-High Trader (one-time validation task)
-This task auto-expires once done. Remove after completion.
+## CLI Live Order Reconciliation (check after any CLI trader run window)
+After 6:30 PM, 7:30 PM, 8:30 PM, or 10 PM ET — whenever a CLI tz group should have run:
+```python
+cd /Users/ian/.openclaw/workspace/polymarket && .venv/bin/python -c "
+import sqlite3, requests
+from kalshi_client import kalshi_auth_headers
+from datetime import date
 
-First run fires at 4pm ET today (Feb 24). After that, count 8 heartbeats, then:
-1. Check `polymarket/forecast_logs/cli_trader_et.stdout.log` (and ct/mt/pt)
-2. Check `polymarket/forecast_logs/cli_trader_errors.jsonl` for any errors
-3. Check `polymarket/forecast_logs/cli_trader_YYYYMMDD.jsonl` for trade signals/results
-4. Fix any errors found
-5. Once logs look clean: notify Ian and ask to approve switching from --paper to LIVE
-   (remove --paper from plists com.trady.cli-trader-{et,ct,mt,pt}, reload launchctl)
-6. After live is approved and running: add a parallel paper version
-   (duplicate all 4 plists as com.trady.cli-paper-{et,ct,mt,pt} with --paper flag,
-   same schedule, so we can compare live vs paper results)
-7. Remove this section from HEARTBEAT.md
+# Trades our DB thinks were placed live today
+db = sqlite3.connect('paper_trades/paper_trades.db')
+live_today = db.execute(\"\"\"
+    SELECT ticker, direction, fill_price FROM trades
+    WHERE model='cli_confirmed' AND date(entered_at)=? AND fill_status != 'assumed'
+\"\"\", (str(date.today()),)).fetchall()
+print('DB live trades today:', len(live_today))
+for t in live_today: print(' ', t)
 
-Note: agents currently run with --paper flag. DO NOT switch to live without Ian's approval.
-Houston is flagged skip_live=True (station verification pending — KIAH vs KHOU).
+# What Kalshi actually shows
+r = requests.get('https://api.elections.kalshi.com/trade-api/v2/portfolio/orders',
+    params={'limit': 50}, headers=kalshi_auth_headers('GET', '/portfolio/orders'), timeout=10)
+orders = r.json().get('orders', [])
+kalshi_tickers = {o['ticker'] for o in orders if o.get('created_time','')[:10] == str(date.today())}
+print('Kalshi orders today:', kalshi_tickers)
+
+# Discrepancies
+db_tickers = {t[0] for t in live_today}
+missing = db_tickers - kalshi_tickers
+if missing: print('⚠️  IN DB BUT NOT ON KALSHI:', missing)
+else: print('✅ DB and Kalshi agree')
+"
+```
+If any tickers are in DB but not on Kalshi → orders are silently failing → investigate immediately.
+
+## CLI Confirmed-High Trader (monitor every heartbeat on trading days)
+1. Check sentinel files for silent kills: `ls -la polymarket/forecast_logs/cli_sentinel_*.json`
+   - Each file has "status": "running" | "done" | "error"
+   - A sentinel stuck on "running" past its expected end time = process was killed
+   - Live logs: `polymarket/forecast_logs/cli_trader_et.stdout.log` (and ct/mt/pt)
+   - Paper logs: `polymarket/forecast_logs/cli_paper_et.stdout.log` (and ct/mt/pt)
+2. Check stderr logs for Python errors
+3. Verify paper P&L ≈ live P&L (should be nearly identical)
+4. Report results to Ian after first settlement
+
+Note: cli-trader-{et,ct,mt,pt} are NOW LIVE (no --paper flag).
+      cli-paper-{et,ct,mt,pt} run in parallel with --paper for comparison.
+      Sentinels written to: polymarket/forecast_logs/cli_sentinel_{tz}_{mode}.json
+      Expected run windows: ET=4-6:30pm, CT=5-7:30pm, MT=6-8:30pm, PT=7-10pm (all ET)
+
+## Morning Start-of-Day Check
+At first heartbeat of the day (after 8 AM ET):
+1. Daemon health: `launchctl list | grep trady` — flag any non-zero exit codes
+2. Forecast log freshness: check mtime of `forecast_logs/forecasts.jsonl` — warn if >8h old
+3. Log error scan: grep last 50 lines of `forecast_logs/ensemble_trader.stdout.log`, `nws_obs_trader.stdout.log`, `obs_exit_monitor.stdout.log` for Traceback/Error
+4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
+5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
 
 ## Notes
 - Paper trades settled by launchctl: `com.trady.trade-settler` (9 AM ET daily)
 - Forecast logged by: `com.trady.forecast-logger` (6 AM/noon/6 PM/midnight ET)
 - Ensemble trader: `com.trady.ensemble-trader` (6:30 AM/12:30 PM/6:30 PM/12:30 AM ET)
-- Intraday ensemble: `com.trady.intraday-ensemble-trader` (6:32 AM/12:32 PM/6:32 PM/12:32 AM ET)
+- Position updater: `com.trady.position-updater` (6:30 AM/12:30 PM/6:30 PM/12:30 AM ET)
+  - Model: `ensemble_with_updates` — same entries as ensemble_trader but exits early on forecast flip
+  - Exit trigger: forecast shift >20pp AND (neg edge >5% OR ensemble extreme <10%/>90%)
+  - Logs exit decisions to `position_updates` table for A/B analysis
 - DB: `polymarket/paper_trades/paper_trades.db`
 - Logs: `polymarket/forecast_logs/forecasts.jsonl` and `cli_actuals.jsonl`
 - First real paper trade results: Feb 25 9 AM settler run (trades target Feb 24)

@@ -125,6 +125,17 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 - **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
 - **WhatsApp:** No headers — use **bold** or CAPS for emphasis
 
+## 🧠 Before You Build Anything
+
+Applies to every code change, every new feature, every subagent task in the trading system:
+
+1. **State the mechanism.** Write one sentence: "This works because [X]." If you can't write that sentence, stop.
+2. **Sanity-check the premise.** Does the logic hold in the real world, not just in code? Ask: would a domain expert find this obviously wrong?
+3. **If uncertain: ask Ian first.** Don't build then explain. Explain then build.
+4. **Check the data.** Do you have what you need to validate this? If not, say so.
+
+This is non-negotiable for anything touching trade entry, trade exit, probability, or sizing.
+
 ## 💓 Heartbeats - Be Proactive!
 
 When you receive a heartbeat poll (message matches the configured heartbeat prompt), don't just reply `HEARTBEAT_OK` every time. Use heartbeats productively!
@@ -152,6 +163,13 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 - Output should deliver directly to a channel without main session involvement
 
 **Tip:** Batch similar periodic checks into `HEARTBEAT.md` instead of creating multiple cron jobs. Use cron for precise schedules and standalone tasks.
+
+**Every heartbeat — trading system sanity check:**
+
+- Glance at recent trade outcomes in the DB. Do win rates match what the models should be producing? A 0/6 run on a bet type is a signal, not noise.
+- Check daemon logs for repeated warnings, unexpected skips, or silent failures.
+- Ask: "Did I implement or change anything recently? Is it behaving as I intended?"
+- If something looks wrong: investigate it, don't note it and move on.
 
 **Things to check (rotate through these, 2-4 times per day):**
 

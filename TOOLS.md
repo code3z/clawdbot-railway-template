@@ -31,6 +31,15 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 | Flick Patrol | ❌ No account | ~few $/month, needed for Netflix market model |
 | X/Twitter API | ❌ No key | Needed for Elon tweet count tracking ($100/month basic tier) |
 
+## Tomorrow.io Weather API — ⚠️ UNUSED (key saved from weather_complex.py)
+- **Key**: `wmnV7bvl2sPInPcIpRkd9gAG34osPiFd`
+- **Endpoint**: `GET https://api.tomorrow.io/v4/weather/forecast`
+- **Params**: `location=lat,lon` | `apikey=KEY` | `units=imperial`
+- **Hourly**: add `timesteps=1h` — returns `timelines.hourly[].values.temperature`
+- **Daily**: default returns `timelines.daily[].values.{temperatureMax,temperatureMin}`
+- **Specialty**: proprietary AI model, good for hourly remaining-hours forecasts
+- **Status**: ❌ Not integrated — key saved in case we want hourly intraday forecasts
+
 ## Foreca Weather API (RapidAPI — upgraded plan, ~10k req/day)
 - **What**: Foreca commercial forecast — Finnish company, 200+ employees, well-regarded accuracy
 - **API key**: `7f597948dbmsh68be647670eed41p161ed9jsn36087b19f9f9`
@@ -66,6 +75,42 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 
 ## Weather.com RapidAPI (sangatpuria01) — ❌ DEAD
 - Akamai revoked provider credentials — all forecast endpoints return 401. Do not use.
+
+## Open-Meteo APIs (no auth, no account needed)
+
+| API | Base URL | Purpose |
+|-----|----------|---------|
+| **Forecast** | `https://api.open-meteo.com/v1/forecast` | Current/future hourly forecast |
+| **Archive** | `https://archive-api.open-meteo.com/v1/archive` | Actual observed historical data |
+| **Historical Forecast** | `https://historical-forecast-api.open-meteo.com/v1/forecast` | What the model *predicted* on a past date |
+
+### Common params (all three endpoints)
+```
+latitude, longitude, start_date, end_date (YYYY-MM-DD)
+hourly=temperature_2m
+temperature_unit=fahrenheit
+timezone=America/New_York  (use city's IANA tz — avoids UTC offset bugs)
+models=best_match|gfs_seamless|ecmwf_ifs025|icon_seamless|gem_seamless
+```
+
+### When to use which
+- **Forecast**: What OM predicts right now for today/tomorrow → used by `fetch_om_peak_hour()` for OM gate
+- **Archive**: Actual observed temperatures (ground truth for backtesting) → used in `backtest_peak_timing_v4.py`
+- **Historical Forecast**: What OM *predicted* on a past date (for backtest realism, post-mortems) → use this to see what the model said at 4pm about tonight's temps, not what actually happened
+
+### Example — historical forecast for Atlanta as it looked Feb 27:
+```python
+requests.get('https://historical-forecast-api.open-meteo.com/v1/forecast', params={
+    'latitude': 33.6367, 'longitude': -84.4281,
+    'start_date': '2026-02-27', 'end_date': '2026-02-27',
+    'hourly': 'temperature_2m',
+    'temperature_unit': 'fahrenheit',
+    'timezone': 'America/New_York',
+    'models': 'best_match',
+})
+```
+
+---
 
 ## Free APIs (no auth, no account needed)
 | API | Base URL | What we use it for |

@@ -2,6 +2,84 @@
 
 Keep this tight. Details belong in project docs, not here.
 
+---
+
+## 🔄 Re-use Sub-Agents — Don't Spawn Fresh When One Exists
+
+When a sub-agent needs follow-up work or a fix:
+1. Check if its session is still alive: `sessions_list`
+2. If alive: use `sessions_send` to steer it — preserves context
+3. Only spawn a new one if the original never ran, crashed with no output, or is from a different session tree (visibility=tree blocks it)
+
+Spawning a fresh agent when the original exists wastes context and ignores prior work.
+
+---
+
+## 🔍 Use Your Full Toolbox — Don't Ask When You Can Look
+
+When you're missing context (forgotten promises, prior decisions, what happened overnight):
+1. **Check session transcripts first** — `sessions_list` to find recent sessions, then read the raw `.jsonl` at `/Users/ian/.openclaw/agents/main/sessions/<id>.jsonl`
+2. **`sessions_history`** works too for structured access
+3. **Completed sub-agents still respond** to `sessions_send` — their context is intact
+4. The answer is almost always in the transcript. Don't ask Ian before looking.
+
+This applies to: "what did I promise?", "what did the sub-agent find?", "what was that second idea?", any "do you remember?" question.
+
+---
+
+## 🔧 Fix Trivial Problems Immediately — Don't Wait for Ian
+
+If something is broken and the fix is safe and obvious (missing package, crashed daemon, stale file, etc.) — **just fix it**. Don't flag it across three heartbeats while trading time ticks away. Ask yourself: "Would Ian expect me to have already fixed this?" If yes, fix it.
+
+Examples of things to fix without asking:
+- `pip install <missing_package>` when a daemon is crash-looping
+- Restarting a crashed launchctl agent after fixing the root cause
+- Cleaning up stale sentinel files
+
+Only wait if the fix is destructive, expensive, or ambiguous.
+
+---
+
+## ⚠️ Read This First — Every Session, Every Context Compact, Every Heartbeat
+
+**Re-read MEMORY.md and `polymarket/LEARNINGS.md` at the start of every session.
+Re-read MEMORY.md at every context compact. If in doubt during a heartbeat, re-read it.**
+Memory is shaky. Rules written down and not re-read are the same as rules not written down.
+
+---
+
+## 🚨 Hard Trading Rules (non-negotiable)
+
+1. **🛑 STATE THE MECHANISM BEFORE BUILDING.** Before any trade logic: write one sentence explaining *why* this makes money or *why* the logic holds in the real world. If you can't write it clearly, stop and ask Ian. Do not implement first and explain later.
+   - **The failure mode:** an idea that sounds locally reasonable ("cold air today → cold air tomorrow") but breaks under a real-world sanity check ("fronts pass, temperatures recover"). Ask: *would a domain expert laugh at this?*
+   - **Subagent tasks are not a shield.** If a spec describes bad logic, I am responsible for catching it before spawning or accepting the result.
+   - This rule is #1 because violating it cost $133 in real money on an obs guard that was physically nonsensical.
+
+2. **NEVER buy a 1¢ contract live.** A 1¢ price means the market is near-certain it won't happen. When I see 96% edge at 1¢ it means my *input data is wrong*, not that the market is wrong. Hard block is in `place_live_order()`. This rule is in memory because I have violated it twice.
+
+3. **Test every code change with a test script before running it on any trader.** No exceptions. If I can't write a test for it, I shouldn't be trading on it.
+
+4. **Max $3/trade, max $6/market/day.** Not $3 × however many markets I feel like. Account size must gate trade count.
+
+5. **Don't think before acting — actually think.** Before placing any trade, ask: "why is the market priced this way?" If I can't answer that, I don't trade. Pattern-matching + executing without sanity-checking is what cost $11 on Feb 25.
+
+6. **Urgency is not an excuse for sloppiness.** Moving fast matters. Writing untested code and immediately running it live is not moving fast — it's moving recklessly. We can do live trading right.
+
+7. **Read `polymarket/LEARNINGS.md` at the start of every session.** The lessons that cost real money are there.
+
+8. **⛔ YOU CANNOT CONFIRM A DAILY HIGH FROM INTRADAY OBS. STOP SAYING YOU CAN.**
+   - Intraday obs can confirm the high is ABOVE a threshold (you saw it there → it's at least that high).
+   - Intraday obs CANNOT confirm the high is BELOW a threshold, or that it's "inside a range" — it could always go higher.
+   - The ONLY intraday confirmations that are valid:
+     - HIGH ≥ threshold: obs saw reading ≥ threshold → confirmed above ✅
+     - LOW ≤ threshold: obs saw reading ≤ threshold → confirmed below ✅ (daily low only goes lower)
+   - INVALID intraday logic (stop writing this):
+     - "obs confirms high is inside range" ❌ — high could still go higher
+     - "HIGH + between + NO is dead because obs shows temp in range" ❌ — same error
+   - Ian has corrected this error multiple times. Do not write it again.
+
+---
+
 ## Ian
 - Technical, knows Python, no prior trading experience but learns fast
 - Asks the right skeptical questions — will catch my BS before I do
@@ -13,6 +91,7 @@ Keep this tight. Details belong in project docs, not here.
 - **Platform**: Kalshi ($50 funded, live trading). Polymarket pending (need Simmer wallet).
 - **Strategy**: Weather markets on Kalshi — automated forecasting vs crowd pricing
 - **Project docs**: `polymarket/README.md` (architecture), `polymarket/LEARNINGS.md` (API gotchas)
+- **⚠️ READ `polymarket/LEARNINGS.md` AT THE START OF EVERY SESSION** — it contains hard-won lessons about station types, rounding errors, settlement rules, and edge cases that are NOT all duplicated here.
 - **Research docs**: `polymarket/STRATEGY_IDEAS.md`, `polymarket/SKILLS.md`, `polymarket/EDGE_ASSESSMENT.md`
 
 ## Live Trades (as of 2026-02-24 ~9 PM ET)
@@ -46,6 +125,16 @@ Keep this tight. Details belong in project docs, not here.
 - CLI trader runs 4 PM ET today; all agents clean; Pydantic SDK bug fixed (raw requests now)
 - `CONFIDENCE_P = 0.975` global for all cities — no per-city skip enforced
 
+## NWS Obs Trader Architecture (updated 2026-02-25 evening)
+- **Confirmed tier** (our_p=1.0): buy at any entry ≤ 98¢. `max_lower > floor` (greater YES), `max_lower > cap` (between NO), `max_lower >= floor AND max_upper <= cap AND day_over` (between YES — INCLUSIVE bounds)
+- **Boundary tier** (our_p=0.30): fires when `max_lower == threshold AND max_upper == threshold+1` (one possible °F wins, one loses). Trade if edge ≥ 5%.
+- **1¢ penny block**: if entry would be 1¢, log and skip — market already repriced, we're too late
+- **Settlement is CLI-based** (direct °F) — ASOS °C rounding is only OUR uncertainty, not Kalshi's
+- **5-minute ASOS can miss 1-minute peaks** (LV: high was 77°F per CLI but obs never showed 25°C all day)
+- **"Below floor NO" not implemented**: by the time is_day_over() fires, market already priced it. Also unsafe since 5-min obs might have missed a higher reading.
+- **Daemon**: runs every 15 seconds, obs refreshed every 5 minutes. PID in launchctl `com.trady.nws-obs-trader` (KeepAlive=true)
+- **Daily max is sticky**: track `max_lower_f` / `max_upper_f` across the day, not just current reading. This is the real edge — markets sometimes look at current temp, we look at daily max.
+
 ## Lessons That Cost Money
 1. **Kalshi Create Order accepts both `yes_price` and `no_price`.** Use `yes_price` for YES orders, `no_price` for NO orders. Market response `no_ask` = price to buy NO → pass as `no_price`. No conversion. (See LEARNINGS.md for full history of getting this wrong.)
 2. **Timezone bugs are silent killers**. UTC midnight ≠ local midnight. Each city needs its own IANA timezone. Code runs fine, places orders, on WRONG data.
@@ -53,8 +142,16 @@ Keep this tight. Details belong in project docs, not here.
 4. **Verify API field meanings empirically** — don't trust field names (createdAt ≠ event start).
 5. **Target boundary markets, not deep ITM**. For confirmed high of 66°F: trade T65 YES + T66 NO (slowest to reprice, most info asymmetry). NOT T61 YES (already obvious, priced quickly by bots). Ian: "you bought 29 or below when they've recorded 33." — markets far from the confirmed high have no info edge.
 6. **OM gate**: Only trade if OM hourly forecast predicts today's peak occurred ≥45min before the CLI "VALID TODAY AS OF" time. Miami blocked correctly: OM peak at 4pm, still potentially rising.
-7. **Be skeptical of 1¢ deals** (Ian, 2026-02-24). Weather markets are NOT private information. A 1¢ ask means the market almost certainly knows something we don't, or our direction is wrong, or it's fully priced in with no profit on the other side. Today: bought YES on `less` markets at 1¢ = guaranteed loss. The "edge" was an illusion.
-8. **Full technical learnings**: `polymarket/LEARNINGS.md`
+7. **⛔ NEVER BUY 1¢ CONTRACTS LIVE. EVER.** (Ian told me this Feb 24. I wrote it down. I ignored it Feb 25 and lost $11. Third time must not happen.)
+   - A 1¢ ask means the market is nearly certain this won't happen. The market is usually right.
+   - When I see 96% edge at 1¢, it means **my input data is wrong**, not that the market is wrong.
+   - Feb 24: bought YES on `less` markets at 1¢ using overnight temperature as confirmed daily high. SA was 61°F at midnight; afternoon hit 87°F. Lost $9.
+   - Hard block now in `place_live_order()` and `cli_manual_trade.py` — logs to `penny_blocks.jsonl` for investigation.
+   - **The block is for 1¢ BUY orders only** — not 99¢ sells or 99¢ entry prices on the winning side (those are fine or correctly rejected by entry_p >= 1.0).
+8. **Morning CLIs are NOT confirmed daily highs.** NWS issues a preliminary CLI at ~7-8 AM local showing overnight temperatures (peak at midnight). The actual afternoon high comes in the afternoon CLI with "VALID TODAY AS OF HH:MM PM". Trading on the morning CLI = trading on the overnight low, not the day's high. Fix: `check_confidence` now blocks CLIs issued before `om_peak + 45min`. If there's no VALID TIME in a CLI and the issued time is before the predicted peak, reject it.
+   - Feb 25: Denver morning CLI said 51°F. Afternoon high was 67°F. We bought NO on the 67-68°F range at 73¢. Lost $2.92.
+9. **$3/trade budget but must cap daily account exposure too.** $3 × 9 trades = $27 on a $27.70 account = effectively all-in. Always leave a reserve. Ian's rule: $3 max per market. Don't place so many markets at once that you drain the account.
+10. **Full technical learnings**: `polymarket/LEARNINGS.md`
 9. **Never use `pkill python3` during a live trading session.** The CT trader was silently killed at 5 PM ET on Feb 24 during debugging — cost us 5 potentially profitable CT trades (Dallas B72.5, Houston B69.5, NOLA B60.5, OKC B72.5, Minneapolis B37.5 all repriced to 100¢). Use targeted kills: `pkill -f "trader.py --tz ET"`.
 10. **Obs monitor MUST be continuous — being first is everything.** Running obs checks 4x/day is wrong. When METAR confirms a position is dead, others see it too. Exit window is minutes to seconds. Daemon polls every 5 min (ASOS) / 60 min (KNYC). Ian: "Most trades must be made in minutes, sometimes in seconds."
 11. **KNYC uses 0.1°C precision, NOT whole °C like ASOS.** c_to_possible_f() for ASOS (±0.5°C window) is wrong for KNYC — use ±0.05°C window. KNYC error is ±0.1°F (negligible for whole-degree thresholds). Don't assume all stations have the same rounding.
@@ -68,6 +165,12 @@ Keep this tight. Details belong in project docs, not here.
 16. **Between market with METAR at boundary will hit LCD drift.** Philly: METAR showed max possible [33,34]°F, triggered between-YES signal. Kalshi LCD settled at 35°F (+1°F drift). Always require strictly inside range (`max_lower > floor AND max_upper < cap`), not at edges.
 17. **Kalshi Pydantic SDK silently drops cities.** `market_api.get_markets()` raises ValidationError when any market has `category=null` or `risk_limit_cents=null`. DC, Atlanta, Philly-low were silently skipped. Fix: always use raw `requests.get()` for market discovery, not the typed SDK.
 18. **Sentinel files** now written by cli trader to `forecast_logs/cli_sentinel_{tz}_{mode}.json` — heartbeat should check for `status: running` stuck past expected end time.
+
+## ⚠️ Backtesting Rules (non-negotiable)
+
+1. **Final CLI is published next morning.** For target_date=D, the settled CLI is published on D+1. Never use same-day CLI records for settlement backtesting.
+2. **ASOS/IEM fetches must use LOCAL day boundaries.** UTC midnight-to-midnight cuts off PT cities at 4 PM local — misses the afternoon high entirely. Always convert local midnight → UTC for query bounds.
+3. **backtest_v3.py CLI vs ASOS gap result (-0.17°F) is wrong** — violated both rules above. Do not cite it. Rerun before using.
 
 ## What Doesn't Work
 - Temporal arb: edge is real but bots price 5m markets in 30-60 seconds. Need VPS infra.
