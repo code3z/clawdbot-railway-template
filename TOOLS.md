@@ -6,6 +6,12 @@
 - Python: 3.12 (at `/Library/Frameworks/Python.framework/Versions/3.12/`)
 - Node: v23.3.0
 
+## Python: Always Use the venv
+- **Venv**: `/Users/ian/.openclaw/workspace/polymarket/.venv` (Python 3.13.0)
+- **Always run**: `.venv/bin/python script.py` or `.venv/bin/python -m pytest tests/`
+- System `python3` is 3.12.8 — different version, different packages. Don't use it.
+- Daemons (launchctl) already use `.venv/bin/python` ✅
+
 ## Python Packages (installed)
 ```
 requests        2.32.3   # HTTP calls

@@ -59,6 +59,11 @@ else: print('✅ DB and Kalshi agree')
 ```
 If any tickers are in DB but not on Kalshi → orders are silently failing → investigate immediately.
 
+## Open-Meteo Rate Limit (check before 4 PM ET on trading days)
+- Run: `curl -s "https://api.open-meteo.com/v1/forecast?latitude=40.78&longitude=-73.97&hourly=temperature_2m&forecast_days=1" | python3 -c "import sys,json; d=json.load(sys.stdin); print('OK' if 'hourly' in d else d.get('reason','?'))"`
+- If rate limited: OM gate will block ALL CLI trader cities — flag to Ian immediately
+- Root cause if hit: check for hot-loop API calls or unexpected script runs
+
 ## CLI Confirmed-High Trader (monitor every heartbeat on trading days)
 1. Check sentinel files for silent kills: `ls -la polymarket/forecast_logs/cli_sentinel_*.json`
    - Each file has "status": "running" | "done" | "error"

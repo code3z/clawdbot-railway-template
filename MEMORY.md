@@ -166,16 +166,98 @@ Memory is shaky. Rules written down and not re-read are the same as rules not wr
 17. **Kalshi Pydantic SDK silently drops cities.** `market_api.get_markets()` raises ValidationError when any market has `category=null` or `risk_limit_cents=null`. DC, Atlanta, Philly-low were silently skipped. Fix: always use raw `requests.get()` for market discovery, not the typed SDK.
 18. **Sentinel files** now written by cli trader to `forecast_logs/cli_sentinel_{tz}_{mode}.json` — heartbeat should check for `status: running` stuck past expected end time.
 
+## Key Testing Rule
+**Always import and use real utils when testing them.** Use `from nws_obs_trader import c_to_possible_f` etc. — never reimplement in a test script. Verified correct 2026-02-27.
+
+## °C → °F Disambiguation Formula (verified 2026-02-27)
+
+**Correct formula** (direction: whole °F → °C, NOT °C → °F):
+```python
+import math
+def f_range_for_c(c_whole):
+    base = c_whole * 9/5 + 32
+    return math.ceil(base - 0.9), math.ceil(base + 0.9) - 1
+```
+Verified vs wethr.net converter. Old `floor((c-0.5)*9/5+32+0.5)` was wrong for some values.
+
+**Empirical base rates** (49 city-dates, Feb 22-26):
+- HI (upper °F): **55%**, LO: **36%**, MISS (1-min peak above 5-min range): **9%**
+- HI bias is real and mechanistically correct: CLI high = 1-min peak, not 5-min avg
+- NWS API has 5-min history (~7 day rolling window)
+
+Details in `polymarket/LEARNINGS.md`.
+
 ## ⚠️ Backtesting Rules (non-negotiable)
 
 1. **Final CLI is published next morning.** For target_date=D, the settled CLI is published on D+1. Never use same-day CLI records for settlement backtesting.
 2. **ASOS/IEM fetches must use LOCAL day boundaries.** UTC midnight-to-midnight cuts off PT cities at 4 PM local — misses the afternoon high entirely. Always convert local midnight → UTC for query bounds.
 3. **backtest_v3.py CLI vs ASOS gap result (-0.17°F) is wrong** — violated both rules above. Do not cite it. Rerun before using.
 
+## 📋 Open TODOs
+
+### ⚠️ DST day-boundary bug — fix before March 8 (DST starts)
+**Source**: wethr.net API docs — https://wethr.net/edu/api-docs
+> "All dates and hours in this API use Local Standard Time year-round (no DST adjustment).
+> Hour 0 always represents midnight Standard Time, not midnight local civil time.
+> This convention matches NWS climate reporting and Kalshi temperature market resolution."
+
+**The bug**: Every day-boundary calculation in our code uses DST-aware IANA zones
+(`ZoneInfo("America/New_York")` etc.). During DST (Mar 8 – Nov 1), civil midnight
+is 1 hour *earlier* than LST midnight. We'll compute "today's obs" starting at
+UTC 05:00 (EDT midnight) instead of UTC 06:00 (EST midnight = Kalshi day start).
+Result: we include the last hour of yesterday's Kalshi day AND miss the last hour
+of today's Kalshi day — potentially missing the afternoon high entirely.
+
+**Affected files**:
+- `trading_utils.py` → `fetch_obs_cache_today()` (line ~716)
+- `obs_exit_monitor.py` → `fetch_todays_obs()`, `_local_today()` (lines ~149–174)
+- `nws_obs_trader.py` → `fetch_obs()` day-boundary window (lines ~234–249)
+- Any CLI issuance-time checks that compare against local midnight
+
+**Fix**: Replace DST-aware IANA zone day boundaries with hardcoded LST offsets:
+```python
+LST_OFFSETS = {
+    "America/New_York":    -5,   # EST always
+    "America/Chicago":     -6,   # CST always
+    "America/Denver":      -7,   # MST always
+    "America/Los_Angeles": -8,   # PST always
+    "America/Phoenix":     -7,   # MST (AZ never observes DST — already correct)
+}
+def lst_midnight(tz_name: str, date_str: str) -> datetime:
+    """Return midnight LST for a given date — matches NWS/Kalshi day boundaries."""
+    offset = LST_OFFSETS[tz_name]
+    return datetime.strptime(date_str, "%Y-%m-%d").replace(
+        tzinfo=timezone(timedelta(hours=offset))
+    )
+```
+Use `lst_midnight()` everywhere we currently use `ZoneInfo(tz).replace(hour=0)` for
+day-boundary queries. Civil time (ZoneInfo) is still fine for "what date is it now."
+
+**Deadline**: March 8, 2026 (DST start). ~9 days.
+
+---
+
+### venv / launchctl cleanup (details in `polymarket/TODO_VENV.md`)
+1. **HIGH** Copy all 21 installed plists to `polymarket/launchctl/` and commit — only 3 are in the repo, rest only exist in `~/Library/LaunchAgents/` (data loss risk if machine rebuilt)
+2. **HIGH** `polymarket/requirements.txt` — run `.venv/bin/pip freeze > requirements.txt` and commit
+3. **MEDIUM** Clear stale stderr logs (nws_obs_trader, obs_exit_monitor) — full of old netCDF4 errors burying real ones
+4. **LOW** Document Python version fragility (venv symlink → python3.13) in a SETUP.md
+
+---
+
 ## What Doesn't Work
 - Temporal arb: edge is real but bots price 5m markets in 30-60 seconds. Need VPS infra.
 - Complement arb (gabagool): bots arb it away instantly.
 - Sports line shopping: Vegas is sharp money too.
+
+## Archived Traders (2026-02-28)
+Files moved to `polymarket/archive/`. Launchctl agents unloaded.
+
+- **nws_revision_trader.py** (`nws_revision`): Bet on NWS forecast revisions before market reprices. Archived because: signal frequency too low (requires ≥3°F revision AND new forecast clears threshold by 3°F — rare conjunction). Also the signal isn't highly confident — NWS revising doesn't mean the new forecast is right, just that it changed.
+
+- **kalshi_no_bias.py** (`kalshi_no_bias`): Bet NO on markets where crowd systematically overprices YES (e.g. Trump mentions). Archived because: the underlying idea is valid and has worked for other traders, but our implementation needs to be different. Would need to focus on one specific niche first and build a proper model for it rather than a generic NO bias.
+
+- **kalshi_systematic_no.py** (`historical_climatology`): Used historical climate normals (avg high for that date) as the forecast. Archived because: the premise is wrong — modern NWS/ensemble forecasts already incorporate historical climatology as a baseline. Betting against expert model predictions using only historical averages is a bet that every meteorologist and forecasting company is wrong in a systematic direction. They aren't.
 
 ## What Might Work (not yet built)
 - Mention markets (MentionHub + transcript analysis) — our sweet spot at small capital
