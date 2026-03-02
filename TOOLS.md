@@ -37,6 +37,22 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 | Flick Patrol | ❌ No account | ~few $/month, needed for Netflix market model |
 | X/Twitter API | ❌ No key | Needed for Elon tweet count tracking ($100/month basic tier) |
 
+## Synoptic Data API — ✅ ACTIVE
+- **API Key**: `Kutc00GJ9R8IQBAZtnb5TIZu7NTvQ5k6WyyWR4osM1` (in `polymarket/keys/synoptic_api_key.txt`)
+- **Token** (generated from key): `b77ae1e010e344d8863bf53aeb8e5ac1` (in `polymarket/keys/synoptic_token.txt`)
+- Token generation: `GET https://api.synopticdata.com/v2/auth?apikey=KEY`
+- Latest obs: `GET https://api.synopticdata.com/v2/stations/latest?stid=KMIA&vars=air_temp&token=TOKEN`
+- Timeseries: `GET https://api.synopticdata.com/v2/stations/timeseries?stid=KMIA&vars=air_temp&start=YYYYMMDDHHMM&end=YYYYMMDDHHMM&token=TOKEN`
+- Has 5-min HF-METAR AND hourly METAR (0.1°C precision at :53)
+- **Speed vs wethr**: TBD — freshest obs ~12 min old in initial test (need head-to-head vs wethr when it resets)
+
+## Open-Meteo Paid API — ✅ ACTIVE
+- **Plan**: Commercial (1M calls/month)
+- **Key**: `gj0wtTIZSyVbtQyP` (also in `polymarket/keys/open_meteo_api_key.txt`)
+- **Customer base URL**: `customer-api.open-meteo.com` (forecast), `customer-ensemble-api.open-meteo.com` (ensemble), `customer-historical-forecast-api.open-meteo.com` (historical)
+- Append `&apikey=gj0wtTIZSyVbtQyP` to all requests
+- Historical API NOT included — upgrade to Professional for that
+
 ## Tomorrow.io Weather API — ⚠️ UNUSED (key saved from weather_complex.py)
 - **Key**: `wmnV7bvl2sPInPcIpRkd9gAG34osPiFd`
 - **Endpoint**: `GET https://api.tomorrow.io/v4/weather/forecast`
