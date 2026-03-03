@@ -8,6 +8,26 @@ Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
 
 ---
 
+## 🚨 Push Migration (active until 10 AM EST — then remove this section)
+
+**Until 3 AM EST:** Check `forecast_logs/wethr_push.jsonl` at every heartbeat:
+- Are obs events flowing? Any stations silent?
+- Do `new_high`/`new_low` events look correct? Are `[lo_f, hi_f]` ranges sensible?
+- Any errors or reconnects in `forecast_logs/wethr_push_client.stdout.log`?
+- Report to Ian if anything looks wrong
+
+**At 3 AM EST exactly:** Execute `polymarket/docs/PUSH_MIGRATION_PLAN.md` steps 1–10.
+Then run the test plan at the bottom. Report results to Ian.
+
+**After 3 AM until 10 AM EST:** At every heartbeat verify:
+- obs_cache populated by push (not old poller)?
+- push_trigger updating? nws_obs_trader + obs_exit_monitor waking on it?
+- Any trades fired? Fills at correct prices (not at limit ceiling)?
+- Day-1 checklist: did `new_high` fire after `cli`? `six_hour_high` in obs payload?
+- Errors in stdout logs?
+
+Full plan: `polymarket/docs/PUSH_MIGRATION_PLAN.md`
+
 ## Weather Trading (every heartbeat)
 1. Check `polymarket/forecast_logs/` for recent entries and errors
 2. Check paper trades DB for any newly settled trades
@@ -91,10 +111,7 @@ At first heartbeat of the day (after 8 AM ET):
 - Paper trades settled by launchctl: `com.trady.trade-settler` (9 AM ET daily)
 - Forecast logged by: `com.trady.forecast-logger` (6 AM/noon/6 PM/midnight ET)
 - Ensemble trader: `com.trady.ensemble-trader` (6:30 AM/12:30 PM/6:30 PM/12:30 AM ET)
-- Position updater: `com.trady.position-updater` (6:30 AM/12:30 PM/6:30 PM/12:30 AM ET)
-  - Model: `ensemble_with_updates` — same entries as ensemble_trader but exits early on forecast flip
-  - Exit trigger: forecast shift >20pp AND (neg edge >5% OR ensemble extreme <10%/>90%)
-  - Logs exit decisions to `position_updates` table for A/B analysis
+- Position updater: ~~`com.trady.position-updater`~~ **ARCHIVED 2026-03-01**
 - DB: `polymarket/paper_trades/paper_trades.db`
 - Logs: `polymarket/forecast_logs/forecasts.jsonl` and `cli_actuals.jsonl`
 - First real paper trade results: Feb 25 9 AM settler run (trades target Feb 24)
