@@ -27,6 +27,42 @@ pip install scipy        # Statistical distributions (Poisson for count models)
 pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 ```
 
+## Kalshi API — Key Facts (v3.8)
+
+**Base URLs:**
+- Live: `https://api.elections.kalshi.com/trade-api/v2`
+- Demo: `https://demo.kalshi.co/trade-api/v2` (Cloudflare-protected, blocks scripts without proper User-Agent)
+
+**Auth:** RSA-PSS signed headers — `KALSHI-ACCESS-KEY`, `KALSHI-ACCESS-TIMESTAMP`, `KALSHI-ACCESS-SIGNATURE`
+
+**Create Order** `POST /portfolio/orders`:
+- `side`: `"yes"` or `"no"`
+- `action`: `"buy"` or `"sell"`
+- `yes_price`: int cents (1–99) — use for YES orders
+- `no_price`: int cents (1–99) — use for NO orders (do NOT invert; LEARNINGS burned us here)
+- `time_in_force`: `"fill_or_kill"` | `"good_till_canceled"` | `"immediate_or_cancel"` (NOT "gtd")
+- `expiration_ts`: Unix timestamp — use with `good_till_canceled` for GTD behavior
+- Returns `{"order": {...}}` with `order_id`
+
+**Order Status** (GET /portfolio/orders/{order_id}):
+- `status` values: `"resting"` (on book) | `"executed"` (filled) | `"canceled"` (canceled or GTD expired)
+- NOT "filled", NOT "cancelled" (two L's), NOT "expired"
+- `fill_count`: int, contracts filled (NOT "filled_count")
+- `yes_price` / `no_price`: both always present, int cents — use the one matching your direction
+- `remaining_count`: contracts still resting
+- No `avg_yes_price` field (that doesn't exist)
+
+**Cancel Order** `DELETE /portfolio/orders/{order_id}`:
+- Returns zeroed order (remaining_count=0) not 204
+- Check `r.ok` for success
+
+**Order Book** (`GET /markets/{ticker}/orderbook`):
+- Returns `{"orderbook": {"yes": [[price_cents, qty], ...], "no": [[price_cents, qty], ...]}}`
+- `yes` side = YES bids; `no` side = NO bids
+- For NO buys: convert YES bids to implied NO asks via `(100 - yes_bid_cents) / 100.0`
+
+---
+
 ## Accounts / Auth Needed
 | Service | Status | Notes |
 |---------|--------|-------|
@@ -36,6 +72,14 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 | Simmer | ✅ Registered (unclaimed) | Agent "trady" — API key at `~/.config/simmer/credentials.json`. Claim URL: https://simmer.markets/claim/reef-DZVP |
 | Flick Patrol | ❌ No account | ~few $/month, needed for Netflix market model |
 | X/Twitter API | ❌ No key | Needed for Elon tweet count tracking ($100/month basic tier) |
+
+## Wethr.net API — ✅ ACTIVE (Developer tier)
+- **Key**: `b71980b06c822887095390a536227eebab21f8c2fc6bf0fd23451ffa3224a29a` (also in `polymarket/obs_poller.py` line 39)
+- **REST base**: `https://wethr.net/api/v2/observations.php`
+- **Push (SSE)**: `https://wethr.net:3443/api/v2/stream?stations=...&api_key=KEY`
+- **Auth**: `Authorization: Bearer KEY` (REST) or `api_key=KEY` query param (push)
+- **Rate limit**: 300 req/min, 50k/day, unlimited stations on push, 1 connection
+- **Docs**: https://wethr.net/edu/api-docs
 
 ## Synoptic Data API — ✅ ACTIVE
 - **API Key**: `Kutc00GJ9R8IQBAZtnb5TIZu7NTvQ5k6WyyWR4osM1` (in `polymarket/keys/synoptic_api_key.txt`)
@@ -49,9 +93,17 @@ pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 ## Open-Meteo Paid API — ✅ ACTIVE
 - **Plan**: Commercial (1M calls/month)
 - **Key**: `gj0wtTIZSyVbtQyP` (also in `polymarket/keys/open_meteo_api_key.txt`)
-- **Customer base URL**: `customer-api.open-meteo.com` (forecast), `customer-ensemble-api.open-meteo.com` (ensemble), `customer-historical-forecast-api.open-meteo.com` (historical)
-- Append `&apikey=gj0wtTIZSyVbtQyP` to all requests
-- Historical API NOT included — upgrade to Professional for that
+
+### Which tier to use:
+| API | URL | Auth |
+|-----|-----|------|
+| Forecast (predictions) | `customer-api.open-meteo.com` | `&apikey=KEY` |
+| Historical Forecast | `historical-forecast-api.open-meteo.com` | **none — free tier** |
+| Ensemble | `ensemble-api.open-meteo.com` | **none — free tier** |
+| Archive (actuals) | `archive-api.open-meteo.com` | **none — free** |
+
+**Rule: use paid (`customer-*`) for live forecast predictions only. Use free endpoints for ensembles and historical data.**
+The `customer-historical-forecast-api.open-meteo.com` endpoint requires Professional plan (we don't have it). Always use the free `historical-forecast-api.open-meteo.com` instead.
 
 ## Tomorrow.io Weather API — ⚠️ UNUSED (key saved from weather_complex.py)
 - **Key**: `wmnV7bvl2sPInPcIpRkd9gAG34osPiFd`
@@ -133,6 +185,25 @@ requests.get('https://historical-forecast-api.open-meteo.com/v1/forecast', param
 ```
 
 ---
+
+## IEM ASOS API — ✅ Free, no auth
+
+Two endpoints — **different station ID formats, not interchangeable:**
+
+| Endpoint | URL | Station format | report_type |
+|----------|-----|----------------|-------------|
+| Hourly ASOS | `https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py` | 4-letter ICAO (KLAX) | `3` |
+| 1-minute ASOS | `https://mesonet.agron.iastate.edu/cgi-bin/request/asos1min.py` | 3-letter (LAX, MDW, NYC) | n/a |
+
+⚠️ Using KLAX with `asos1min.py` returns HTTP 422 immediately. No error message, just fails.
+
+Common params (hourly): `station=KMIA&data=tmpf&year1=...&month1=...&day1=1&year2=...&month2=...&day2=...&tz=UTC&format=onlycomma&latlon=no&missing=M&trace=T&direct=no&report_type=3`
+
+- `M` = missing — skip those rows
+- `tmpf` = °F (integer for hourly, may be float for 1-min)
+- Minneapolis (KMSP) has no 1-min archive — hourly only
+- Fetch already implemented: `intraday/build_trajectory_model.py` (1-min, LAX) and `intraday/build_low_offset_model_v2.py` (1-min, all cities)
+- Cache to `intraday/iem_cache/{STATION}_1min.json` or `{STATION}.json`
 
 ## Free APIs (no auth, no account needed)
 | API | Base URL | What we use it for |

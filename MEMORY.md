@@ -4,6 +4,51 @@ Keep this tight. Details belong in project docs, not here.
 
 ---
 
+## ✅ HIGH/LOW Symmetry Check — Do This Before Shipping Any Trading Logic
+
+Whenever I write or modify logic that handles HIGH markets, **immediately ask**: does the LOW branch handle the same cases? And vice versa.
+
+Strike types to check for both HIGH and LOW: `greater`, `less`, `between`.
+
+Confirmed signals that must be handled for each:
+- HIGH greater YES: `lo_f > floor`
+- HIGH between NO:  `lo_f > cap`
+- LOW less YES:     `hi_f <= cap`
+- LOW greater NO:   `hi_f <= floor`
+- LOW between NO:   `hi_f <= floor` (low confirmed below range floor) ← **this was missing and cost us real trades on 2026-03-04**
+
+Before marking any trading logic done: read through both branches side by side and confirm every strike type is handled.
+
+---
+
+## 📈 Kalshi Is an Open Limit Order Book
+
+Kalshi is NOT a market-maker model. There is no entity "pricing" markets.
+- Participants post limit bids/asks in an open order book
+- Trades fill when a buy order matches a resting sell order (or vice versa)
+- If our buy order doesn't fill, it means there are no sellers at our price — the order rests
+- "Market repriced" = other participants already bought up available sell orders, leaving none at our price
+- Do NOT say "bots repriced the market" — say "available sell orders were swept before we arrived"
+
+---
+
+## ⏰ Timed Tasks: Use Cron, Not Heartbeat
+
+If Ian asks me to do something "at 3 AM" or any specific time:
+- **Use a cron job** (`openclaw cron add`) — don't rely on a heartbeat firing at the right time
+- Heartbeats are ~30 min intervals and can be skipped, delayed, or aborted
+- A missed heartbeat = a missed task. Cron fires exactly when scheduled.
+
+**How to set a cron job:**
+```
+openclaw cron add --schedule "0 3 * * *" --message "Execute push migration per PUSH_MIGRATION_PLAN.md"
+```
+Or use the `sessions_spawn` approach for one-shot tasks at a specific time.
+
+**Lesson (2026-03-03):** Ian asked me to run the wethr push migration at 3 AM. I put it in HEARTBEAT.md but didn't set a cron. The 3 AM heartbeat got aborted (26-line deleted session). The 4:25 AM heartbeat ran but I skimmed HEARTBEAT.md instead of reading the whole thing and said HEARTBEAT_OK. Task never ran. Read. The. Whole. File.
+
+---
+
 ## 🔄 Re-use Sub-Agents — Don't Spawn Fresh When One Exists
 
 When a sub-agent needs follow-up work or a fix:
@@ -45,6 +90,65 @@ Only wait if the fix is destructive, expensive, or ambiguous.
 **Re-read MEMORY.md and `polymarket/LEARNINGS.md` at the start of every session.
 Re-read MEMORY.md at every context compact. If in doubt during a heartbeat, re-read it.**
 Memory is shaky. Rules written down and not re-read are the same as rules not written down.
+
+---
+
+## 🌡️ Low Markets: The Asymmetry Rule (non-negotiable)
+
+**The daily LOW can only go DOWN. The daily HIGH can only go UP. This changes everything.**
+
+| | High (can only ↑) | Low (can only ↓) |
+|---|---|---|
+| Confirmed **above** threshold | ✅ monotonic, trade it | ❌ needs end-of-day |
+| Confirmed **below** threshold | ❌ needs end-of-day | ✅ monotonic, trade it |
+
+**For low markets, the only valid intraday confirmed signals are:**
+- `greater NO`:  min_upper_f ≤ floor → low is already at/below floor → NO wins
+- `between NO` (below range): min_upper_f ≤ floor → low already below range → NO wins
+- `less YES`:    min_upper_f ≤ cap → low is already at/below cap → YES wins
+
+**NEVER fire these for lows (they require end-of-day):**
+- `greater YES` — "running min is 55°F so low > 54°F" → **WRONG**. It could drop to 45°F tonight.
+- `less NO` — "running min is 60°F so low won't drop below 55°F" → **WRONG**. Same reason.
+- `between NO` (above range) — same error.
+
+**The failure mode that got caught (2026-03-03):**
+Fired `KXLOWTLAX-26MAR03-T54 YES` because running min=55 > floor=54. This was completely
+wrong — LAX's low hadn't been set yet. It could have dropped to 48°F overnight.
+Caught before any live trade, but would have cost real money if live.
+
+**The mental check:** For a low market signal, ask: "Could the temperature still drop below
+this threshold tonight?" If yes → do not trade.
+
+---
+
+## ❌ Confirmed-Fast / obs_exit_monitor — Removed 2026-03-04
+
+**Why it didn't work:**
+- `handle_confirmed_fast` placed 99¢ resting limit orders on Kalshi when ASOS obs confirmed a threshold was crossed (e.g. running_max > cap → NO is guaranteed). Same logic applied in reverse via `obs_exit_monitor` (sell at 1¢ when position goes wrong).
+- WetHR push stream has ~2 minute lag. Bots are already there. The resting limit order queue at 99¢ on any confirmed market routinely exceeds the daily volume of the market — we were just adding to a pile that never fills.
+- Only 4 of ~10 confirmed-fast trades filled on the day we removed it.
+- `obs_exit_monitor` exits (sell at 1¢) recovered cents at best, and caused losses when it fired incorrectly on stale obs (CHI −$25, PHX −$17, DAL −$16).
+
+**What to try in the future (needs instant data):**
+- Twilio ASOS phone-in: ASOS stations have a phone number you can call for the current reading. Near-instant, no API lag.
+- A co-located bot with direct websocket to Kalshi + NWS ASOS feed.
+- Until then: our edge is in MODELS (peak_passed, ensemble, trough), not in data speed.
+
+**Files archived:** `obs_exit_monitor.py` → `polymarket/archive/`
+**Plist unloaded:** `com.trady.obs-exit-monitor`
+**Code removed from:** `nws_obs_trader.py` — `handle_confirmed_fast()`, `_session_traded_live`, `MAX_TRADE_PCT_CONFIRMED`, `MAX_ENTRY_CENTS`
+
+---
+
+## ⛔ CLI REPORTS ISSUED AFTER MIDNIGHT ARE FOR THE PREVIOUS DAY
+
+**NWS CLI reports issued at midnight, 1 AM, 2 AM local time contain YESTERDAY'S data.**
+A `cli_low` or `cli_high` event at 12:56 AM on March 4 = March 3 climate data.
+Using it for a March 4 market = trading on the wrong day's data.
+
+**The fix**: always check that the CLI report date matches the market's target_date before trading.
+This has been explained to me 10+ times. Stop forgetting it.
 
 ---
 
@@ -91,6 +195,7 @@ Memory is shaky. Rules written down and not re-read are the same as rules not wr
 - **Platform**: Kalshi ($50 funded, live trading). Polymarket pending (need Simmer wallet).
 - **Strategy**: Weather markets on Kalshi — automated forecasting vs crowd pricing
 - **Project docs**: `polymarket/README.md` (architecture), `polymarket/LEARNINGS.md` (API gotchas)
+- **Market structure reference**: `polymarket/MARKET_STRUCTURE.md` — series/market/ticker format, three strike types, settlement rules, pricing fields
 - **⚠️ READ `polymarket/LEARNINGS.md` AT THE START OF EVERY SESSION** — it contains hard-won lessons about station types, rounding errors, settlement rules, and edge cases that are NOT all duplicated here.
 - **Research docs**: `polymarket/STRATEGY_IDEAS.md`, `polymarket/SKILLS.md`, `polymarket/EDGE_ASSESSMENT.md`
 
@@ -233,7 +338,14 @@ def lst_midnight(tz_name: str, date_str: str) -> datetime:
 Use `lst_midnight()` everywhere we currently use `ZoneInfo(tz).replace(hour=0)` for
 day-boundary queries. Civil time (ZoneInfo) is still fine for "what date is it now."
 
-**Deadline**: March 8, 2026 (DST start). ~9 days.
+**Deadline**: March 8, 2026 (DST start). ~3 days.
+
+**NOT in scope for this fix**:
+- Trading window scheduling (launchctl plist `Hour=` values) — these fire at civil time, which is correct. After DST, 11:15 AM EDT is still 11:15 AM on the clock. ✅
+- Morning trader deadline computation (`now_et.replace(hour=15)`) — civil time, correct. ✅
+- Kalshi order placement / expiry timestamps — Kalshi operates in civil time for business hours. ✅
+
+**In scope** (NWS/obs layer only): any code that computes "which calendar day does this weather observation belong to" must use LST, not civil time. NWS uses LST year-round for all climate reporting.
 
 ---
 
@@ -242,6 +354,18 @@ day-boundary queries. Civil time (ZoneInfo) is still fine for "what date is it n
 2. **HIGH** `polymarket/requirements.txt` — run `.venv/bin/pip freeze > requirements.txt` and commit
 3. **MEDIUM** Clear stale stderr logs (nws_obs_trader, obs_exit_monitor) — full of old netCDF4 errors burying real ones
 4. **LOW** Document Python version fragility (venv symlink → python3.13) in a SETUP.md
+
+---
+
+## 🔴 MUST BRING UP WITH IAN (remove when done)
+
+### Low-Offset Calibration Model (trough_passed_signal)
+- Sub-agent `low-offset-model` spawned 2026-03-05 to train a calibrated offset table for lows
+  (analogous to the high-offset table used by peak_passed_signal)
+- Results will be in `polymarket/intraday/low_offset_model.md` (writeup) and likely
+  `polymarket/intraday/low_offset_model.json` (the table itself)
+- **Do NOT implement yet** — just train and report. Ian must review before integration.
+- Bring this up every session until removed from MEMORY.md.
 
 ---
 
@@ -267,7 +391,62 @@ Files moved to `polymarket/archive/`. Launchctl agents unloaded.
 - See `polymarket/STRATEGY_IDEAS.md` for full list
 
 
+## Dashboard
+Always restart the dashboard after making changes to dashboard.py:
+```bash
+pkill -f "python.*dashboard"; sleep 1; launchctl kickstart gui/$(id -u)/com.trady.dashboard
+```
+
 ## Browser Access
 **Ask Ian immediately when browser is blocked** — don't silently route around it.
 Say exactly: "Browser blocked — can you attach a Chrome tab to the OpenClaw extension?"
 If he doesn't respond by the next heartbeat, continue without browser access.
+
+---
+
+## 🔍 Self-Review Before Every Commit (non-negotiable)
+
+Before committing any new file or significant change:
+
+1. **Syntax check**: `python -c "import ast; ast.parse(open('file.py').read())"` — no exceptions.
+2. **Import check**: `python -c "import module_name"` — catches NameErrors, missing deps.
+3. **Scope check**: Any helper function called across multiple functions must be at MODULE level, not nested inside one function.
+4. **P table / lookup table check**: Verify each row uses the correct formula. Symmetric-looking tables are often NOT symmetric (e.g., "high no greater" ≠ complement of "high yes greater at same delta" — different scenarios entirely).
+5. **Loop interaction check**: If two loops both sleep and do work, ask "do they block each other?" Sequential retry + management loops means orders go unmanaged during retry sleeps. Merge into one heartbeat.
+6. **DB method check**: If calling `Trade.expire()`, `Trade.fill()`, `Trade.settle()` etc., verify those methods actually exist in `paper_trading/db.py` before shipping.
+
+Failures on steps 1-2 are embarrassing. Steps 3-6 are the ones that cost real money.
+
+---
+
+## ⚠️ CLI IS ALWAYS PRELIMINARY — NEVER "FINAL DAILY MAX"
+
+**Ian has corrected this multiple times. Do not say "CLI = official final daily max" ever again.**
+
+- NWS CLI is issued MULTIPLE TIMES per day as new observations come in
+- Each issuance shows the high SO FAR — a higher temp CAN still be recorded later
+- Kalshi settles against the **FINAL CLI**, published the MORNING AFTER the target date
+- The wethr push `cli` event = preliminary CLI issuance — same as what the CLI daemon uses
+- DSM = end-of-day confirmed (3 cities only: KNYC, KMSP, KSAT)
+- There is NO intraday source that gives the "confirmed final daily max" except next-morning CLI
+
+Source: LEARNINGS.md lines 51-58, 213-217
+
+---
+
+## 🔧 Fix It, Don't Narrate It (2026-03-05)
+
+When I identify a problem, **fix it immediately**. Do not describe the problem, say "I'll keep an eye on it," or flag it for later if the fix is straightforward and safe.
+
+Ian's exact words: "why would you just say the issue and not fix it??"
+
+This applies to: stuck processes, misconfigs, redundant daemons, anything with an obvious safe fix. The bar for acting vs. asking is: would Ian expect me to have already fixed this?
+
+---
+
+## 🔌 Wethr Push Client — Never Double-Restart (2026-03-05)
+
+Wethr server holds connection slot ~20 min after client dies (application-level session tracking, not TCP state). If you restart the push client while a session is still live on the server, you'll get 409 for up to 20 minutes.
+
+**Rule:** Kill once → let launchctl bring it back → do not touch it again for 20 min.
+**409 retry** is now 30s (was 300s). Self-heals automatically.

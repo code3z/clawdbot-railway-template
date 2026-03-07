@@ -8,26 +8,6 @@ Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
 
 ---
 
-## 🚨 Push Migration (active until 10 AM EST — then remove this section)
-
-**Until 3 AM EST:** Check `forecast_logs/wethr_push.jsonl` at every heartbeat:
-- Are obs events flowing? Any stations silent?
-- Do `new_high`/`new_low` events look correct? Are `[lo_f, hi_f]` ranges sensible?
-- Any errors or reconnects in `forecast_logs/wethr_push_client.stdout.log`?
-- Report to Ian if anything looks wrong
-
-**At 3 AM EST exactly:** Execute `polymarket/docs/PUSH_MIGRATION_PLAN.md` steps 1–10.
-Then run the test plan at the bottom. Report results to Ian.
-
-**After 3 AM until 10 AM EST:** At every heartbeat verify:
-- obs_cache populated by push (not old poller)?
-- push_trigger updating? nws_obs_trader + obs_exit_monitor waking on it?
-- Any trades fired? Fills at correct prices (not at limit ceiling)?
-- Day-1 checklist: did `new_high` fire after `cli`? `six_hour_high` in obs payload?
-- Errors in stdout logs?
-
-Full plan: `polymarket/docs/PUSH_MIGRATION_PLAN.md`
-
 ## Weather Trading (every heartbeat)
 1. Check `polymarket/forecast_logs/` for recent entries and errors
 2. Check paper trades DB for any newly settled trades

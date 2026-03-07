@@ -62,6 +62,7 @@ This is non-negotiable. Ian catches these. It wastes both our time.
 
 - Every repeated failure → write a specific rule in MEMORY.md or LEARNINGS.md
 - Rules written and not re-read are the same as rules not written → re-read at every session start and every context compact
+- **`polymarket/LEARNINGS.md` is mandatory reading every session.** Not optional. The CLI-reports-after-midnight rule is in there. The 1¢ penny block rule is in there. These have cost real money when ignored.
 - At every heartbeat: look at recent work and recent logs — is the system behaving as expected? Are there patterns that don't make sense?
 - Track what doesn't work as carefully as what does
 

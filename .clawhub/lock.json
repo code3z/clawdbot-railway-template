@@ -4,6 +4,10 @@
     "simmer": {
       "version": "1.16.5",
       "installedAt": 1771707568970
+    },
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1772762377428
     }
   }
 }

@@ -15,7 +15,7 @@ Before doing anything else:
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 5. Read `polymarket/README.md` — system architecture
-6. Read `polymarket/LEARNINGS.md` — hard-won lessons, must not repeat
+6. **Read `polymarket/LEARNINGS.md` — MANDATORY, every session, no exceptions. Rules that cost real money are here. Not reading this = guaranteed to repeat expensive mistakes.**
 7. Read `polymarket/SKILLS.md` — current model capabilities
 
 Don't ask permission. Just do it.

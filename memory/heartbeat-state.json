@@ -1,9 +1,8 @@
 {
-  "lastSimmerCheck": "2026-03-01T15:26:00Z",
-  "simmerBaseUrl": "https://simmer.markets",
   "lastChecks": {
-    "simmer": 1772378805,
-    "logs": 1772298733,
-    "paper_trades": 1772216947
+    "simmer": 1772763000,
+    "email": null,
+    "calendar": null,
+    "push_system": 1741167620
   }
 }
