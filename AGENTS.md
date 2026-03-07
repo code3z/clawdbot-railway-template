@@ -128,6 +128,22 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 - **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
 - **WhatsApp:** No headers — use **bold** or CAPS for emphasis
 
+## 🛠️ Code Editing — Default Process (non-negotiable)
+
+Every code change, no matter how small, follows these 8 steps in order:
+
+1. **Commit first** — before touching anything, `git add -A && git commit` to preserve the current state
+2. **Scope** — write out exactly what files/functions you're changing and why; identify what you're NOT touching
+3. **Check your scope** — re-read the target code; confirm your plan is correct and the logic holds; catch wrong assumptions before implementing
+4. **Implement** — make the changes surgically; only touch what's in scope
+5. **Test** — syntax check (`ast.parse`), import check, and a logic test (unit test or simulation); do NOT skip because "it looks right"
+6. **Sanity check** — read the changed code in context; confirm it makes rational sense end-to-end
+7. **Commit** — commit with a clear message describing what changed and why
+8. **Check again** — re-read the final state; confirm nothing was accidentally broken
+
+If a test fails, fix it before committing. If a sanity check reveals a problem, fix it before committing.
+This process exists because bugs in trading logic cost real money. Fast + sloppy is never faster than careful + right.
+
 ## 🧠 Before You Build Anything
 
 Applies to every code change, every new feature, every subagent task in the trading system:
