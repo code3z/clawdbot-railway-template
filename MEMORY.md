@@ -300,52 +300,12 @@ Details in `polymarket/LEARNINGS.md`.
 
 ## 📋 Open TODOs
 
-### ⚠️ DST day-boundary bug — fix before March 8 (DST starts)
-**Source**: wethr.net API docs — https://wethr.net/edu/api-docs
-> "All dates and hours in this API use Local Standard Time year-round (no DST adjustment).
-> Hour 0 always represents midnight Standard Time, not midnight local civil time.
-> This convention matches NWS climate reporting and Kalshi temperature market resolution."
-
-**The bug**: Every day-boundary calculation in our code uses DST-aware IANA zones
-(`ZoneInfo("America/New_York")` etc.). During DST (Mar 8 – Nov 1), civil midnight
-is 1 hour *earlier* than LST midnight. We'll compute "today's obs" starting at
-UTC 05:00 (EDT midnight) instead of UTC 06:00 (EST midnight = Kalshi day start).
-Result: we include the last hour of yesterday's Kalshi day AND miss the last hour
-of today's Kalshi day — potentially missing the afternoon high entirely.
-
-**Affected files**:
-- `trading_utils.py` → `fetch_obs_cache_today()` (line ~716)
-- `obs_exit_monitor.py` → `fetch_todays_obs()`, `_local_today()` (lines ~149–174)
-- `nws_obs_trader.py` → `fetch_obs()` day-boundary window (lines ~234–249)
-- Any CLI issuance-time checks that compare against local midnight
-
-**Fix**: Replace DST-aware IANA zone day boundaries with hardcoded LST offsets:
-```python
-LST_OFFSETS = {
-    "America/New_York":    -5,   # EST always
-    "America/Chicago":     -6,   # CST always
-    "America/Denver":      -7,   # MST always
-    "America/Los_Angeles": -8,   # PST always
-    "America/Phoenix":     -7,   # MST (AZ never observes DST — already correct)
-}
-def lst_midnight(tz_name: str, date_str: str) -> datetime:
-    """Return midnight LST for a given date — matches NWS/Kalshi day boundaries."""
-    offset = LST_OFFSETS[tz_name]
-    return datetime.strptime(date_str, "%Y-%m-%d").replace(
-        tzinfo=timezone(timedelta(hours=offset))
-    )
-```
-Use `lst_midnight()` everywhere we currently use `ZoneInfo(tz).replace(hour=0)` for
-day-boundary queries. Civil time (ZoneInfo) is still fine for "what date is it now."
-
-**Deadline**: March 8, 2026 (DST start). ~3 days.
-
-**NOT in scope for this fix**:
-- Trading window scheduling (launchctl plist `Hour=` values) — these fire at civil time, which is correct. After DST, 11:15 AM EDT is still 11:15 AM on the clock. ✅
-- Morning trader deadline computation (`now_et.replace(hour=15)`) — civil time, correct. ✅
-- Kalshi order placement / expiry timestamps — Kalshi operates in civil time for business hours. ✅
-
-**In scope** (NWS/obs layer only): any code that computes "which calendar day does this weather observation belong to" must use LST, not civil time. NWS uses LST year-round for all climate reporting.
+### ✅ DST day-boundary bug — FIXED (prior sessions, confirmed 2026-03-07)
+`LST_OFFSETS`, `lst_midnight`, `lst_today` implemented in `trading_utils.py` and used
+in all critical day-boundary paths (`fetch_obs_cache_today`, `fetch_obs_cache_sequence`,
+`fetch_obs_from_push`, `fetch_obs` in nws_obs_trader, CLI peak UTC in cli_strategy/trader).
+Remaining `ZoneInfo` usages are civil clock-time gates ("is it past 8 AM?") — correct.
+Verified by code audit 2026-03-07 morning. Git history: afdc614, 920ef8f, 4b544a3.
 
 ---
 
