@@ -152,6 +152,15 @@ This has been explained to me 10+ times. Stop forgetting it.
 
 ---
 
+## 📋 twc_morning_trader Limit Order Rules (non-negotiable)
+
+1. **Never bid above max_limit.** max_limit = our_p - MIN_EDGE. If the market is above max_limit, leave the order resting AT max_limit — do not cancel. If market comes back down, we fill at a good price. Cancelling gives up free optionality.
+2. **When stepping up prices, cap at min(target_price, max_limit).** Always check edge before moving an order. Never step above max_limit.
+3. **Deadline is 10 PM EDT (= 9 PM LST).** After 9 PM LST, other traders can use overnight observations for next-day markets (Kalshi day starts midnight LST = 1 AM EDT). Before that, our TWC forecast model has comparable info. Don't leave orders open past 10 PM EDT.
+4. **The manage loop already enforces max_limit via effective_max.** The bug is manual interventions that skip this check.
+
+---
+
 ## 🚨 Hard Trading Rules (non-negotiable)
 
 1. **🛑 STATE THE MECHANISM BEFORE BUILDING.** Before any trade logic: write one sentence explaining *why* this makes money or *why* the logic holds in the real world. If you can't write it clearly, stop and ask Ian. Do not implement first and explain later.
@@ -212,7 +221,7 @@ This has been explained to me 10+ times. Stop forgetting it.
 - **trading_utils.py**: Shared market scan utils (KALSHI_SERIES, fetch/orderbook/fill/parse, forecast loading) — import from here
 - **ensemble_trader.py**: Runs at X:30, best-edge-per-city, $25 max. Imports from trading_utils
 - **position_updater.py**: Runs at X:30 + 11:30am, model=ensemble_with_updates — same entries as ensemble_trader but exits early on forecast flip (shift >20pp + neg edge); A/B vs ensemble_trader
-- **cli_strategy/trader.py**: CLI confirmed-high strategy. Live: com.trady.cli-trader-{et,ct,mt,pt} (no --paper). Paper mirror: com.trady.cli-paper-{et,ct,mt,pt}. First live run 4pm ET Feb 24.
+- **cli_strategy/trader.py**: CLI confirmed-high strategy. Triggered by wethr push `cli` event via `com.trady.cli-push-trigger` — do NOT use scheduled launchd polling agents for this. The scheduled cli-trader-{et,ct,mt,pt} and cli-paper-{et,ct,mt,pt} agents have been unloaded (2026-03-08). Push trigger is the correct and only architecture.
 - **obs_exit_monitor.py**: Continuous daemon (KeepAlive launchctl). Polls ASOS every 5min, KNYC every 60min. Hard-exits NO-on-greater when min_lower_f > floor_strike, YES-on-between when min_lower_f > cap_strike. Only checks target_date == local today.
 - **paper_trading/**: SQLite SDK with Kelly sizing, calibration tracking, Brier score
 - **Kalshi series active**: boston/chicago/dc/houston/lasvegas/miami/minneapolis/okc/philly/sanantonio/sfo/seattle/austin
