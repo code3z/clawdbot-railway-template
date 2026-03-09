@@ -1,8 +1,9 @@
 {
   "lastChecks": {
-    "simmer": 1772763000,
+    "simmer": 1772904049,
     "email": null,
     "calendar": null,
     "push_system": 1741167620
-  }
+  },
+  "simmerNote": "API returning 'Missing or invalid Authorization header' for all auth formats (Bearer, X-API-Key, query param). Account may need claiming at https://simmer.markets/claim/reef-DZVP"
 }

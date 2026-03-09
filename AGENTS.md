@@ -8,16 +8,28 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 ## Every Session
 
-Before doing anything else:
+Before doing anything else, read ALL of the following files in order. For each file, use NO `limit` parameter. If the tool output says "X more lines in file", call `read` again with `offset=N` until you reach the end. Do not stop early.
 
-1. Read `SOUL.md` — this is who you are
-2. Read `USER.md` — this is who you're helping
-3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
-5. Read `polymarket/README.md` — system architecture
-6. **Read `polymarket/RULES.md` — MANDATORY, every session, no exceptions. 30 hard rules, one page. Read it fully before touching any trading code.**
-7. **Read `polymarket/LEARNINGS.md` — MANDATORY, every session, no exceptions. Rules that cost real money are here. Not reading this = guaranteed to repeat expensive mistakes.**
-8. Read `polymarket/SKILLS.md` — current model capabilities
+**Startup sequence (do all 8, in order, before responding to the user):**
+
+1. `SOUL.md` — who you are
+2. `USER.md` — who you're helping
+3. `memory/YYYY-MM-DD.md` (today + yesterday) — recent context
+4. **MAIN SESSION ONLY:** `MEMORY.md` — long-term memory (do NOT load in group chats / Discord)
+5. `polymarket/README.md` — system architecture
+6. `polymarket/RULES.md` — 30 hard rules, mandatory, ALL LINES
+7. `polymarket/LEARNINGS.md` — **MANDATORY, ALL LINES, NO EXCEPTIONS**
+   - Use `read(file_path=..., offset=1)` — NO limit parameter
+   - When output says "[N more lines in file. Use offset=M to continue.]" → call `read(file_path=..., offset=M)` immediately
+   - Repeat until output does NOT contain "more lines in file"
+   - Do NOT stop after the first call. Do NOT use limit=. Do NOT skim.
+   - These rules cost real money when ignored.
+8. `polymarket/SKILLS.md` — current model capabilities
+
+**After completing all 8 steps**, output exactly this line before greeting the user:
+`[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY-TODAY ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓ SKILLS ✓]`
+
+If you skip any file or read LEARNINGS.md partially, you are violating a hard rule. There is no excuse.
 
 Don't ask permission. Just do it.
 
@@ -128,6 +140,18 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 - **Discord/WhatsApp:** No markdown tables! Use bullet lists instead
 - **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
 - **WhatsApp:** No headers — use **bold** or CAPS for emphasis
+
+## 🚫 No Junk Fallbacks
+
+When a dependency is extremely reliable (sklearn model load, wethr push, DB connection), **do not write a fallback path just because the case theoretically exists**.
+
+- Catch the error so the script doesn't crash — yes
+- Log it — yes
+- Write a whole alternative solution (inferior model, degraded logic, workaround) for something that should never happen — **no**
+
+If the model didn't load, skip the trade. If the API is down, skip the trade. Don't silently fall back to something worse and pretend it's a feature.
+
+**The test:** "Would I ever intentionally route to this fallback?" If no — don't write it.
 
 ## 🛠️ Code Editing — Default Process (non-negotiable)
 

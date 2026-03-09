@@ -226,3 +226,10 @@ Common params (hourly): `station=KMIA&data=tmpf&year1=...&month1=...&day1=1&year
 ## Running Processes
 Check PIDs in `polymarket/paper_trades/pid.txt` for paper_trader.py.
 Other processes (systematic_no.py, weather_oracle.py) — check with `ps aux | grep python`.
+
+## Temperature Data Sources Reference
+Full details in `polymarket/DATA_SOURCES.md`. Quick summary:
+- **Live (real-time):** wethr push (5-min whole-°C, bucket ambiguity), NWS hourly METAR T-group (0.1°C exact), 6-hr METAR max (exact), CLI/DSM (exact settlement values)
+- **Training/backtest:** IEM hourly (T-group origin, any °F reachable), IEM 1-min (NCEI original °F, closest to CLI settlement)
+- **Key rule:** IEM has finer resolution than live system. To mock live data, map IEM °F → `f_to_c_bucket()` → `asos_display_c_to_f()` interval. Only changes that cross a °C bucket boundary are observable in production.
+- **CLI settlement:** 1-minute averages in whole °F, no C→F conversion. IEM 1-min running max ≈ CLI settlement value.
