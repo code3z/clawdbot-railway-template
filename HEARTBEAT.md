@@ -16,6 +16,25 @@ Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
    - Requires forecast_logger to have run first (NBM data in forecasts.jsonl)
    - Model: truncated normal, σ=XND/1.28, P∈[10%,90%], edge≥8%, $3 max/trade
 
+## Fill Monitor Health (every heartbeat)
+```bash
+python3 - <<'EOF'
+import json, time
+from pathlib import Path
+h = Path('/Users/ian/.openclaw/workspace/polymarket/forecast_logs/fill_monitor_health.json')
+if not h.exists():
+    print("❌ fill_monitor_health.json MISSING — fill monitor never wrote health file")
+else:
+    d = json.loads(h.read_text())
+    age_min = (time.time() - time.mktime(__import__('datetime').datetime.fromisoformat(d['ts'].replace('Z','+00:00')).timetuple())) / 60
+    print(f"Last sweep: {age_min:.0f} min ago | ok={d['sweep_ok']} | checked={d['n_checked']}")
+    if age_min > 10:
+        print("❌ STALE — fill monitor may be stuck or crashed")
+EOF
+```
+- Also grep for ERROR lines: `grep ERROR polymarket/forecast_logs/paper_fill_monitor.stderr.log | tail -5`
+- Any `FILL_MONITOR API FAILURE` lines = silent API breakage; investigate immediately
+
 ## Simmer (a few times per day)
 If it's been a while since last Simmer check:
 1. Health check: `GET /api/sdk/health` (no auth — verify API is reachable)
