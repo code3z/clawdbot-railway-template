@@ -221,7 +221,8 @@ This has been explained to me 10+ times. Stop forgetting it.
 - **trading_utils.py**: Shared market scan utils (KALSHI_SERIES, fetch/orderbook/fill/parse, forecast loading) — import from here
 - **ensemble_trader.py**: Runs at X:30, best-edge-per-city, $25 max. Imports from trading_utils
 - **position_updater.py**: Runs at X:30 + 11:30am, model=ensemble_with_updates — same entries as ensemble_trader but exits early on forecast flip (shift >20pp + neg edge); A/B vs ensemble_trader
-- **cli_strategy/trader.py**: CLI confirmed-high strategy. Triggered by wethr push `cli` event via `com.trady.cli-push-trigger` — do NOT use scheduled launchd polling agents for this. The scheduled cli-trader-{et,ct,mt,pt} and cli-paper-{et,ct,mt,pt} agents have been unloaded (2026-03-08). Push trigger is the correct and only architecture.
+- **cli_strategy/trader.py**: CLI confirmed-high strategy. Three event sources now supported: `cli`, `dsm`, `six_hour_high`. All use the same three-part gate in `check_confidence()`. `valid_hour` is required; `peak_local_hour` optional (Gate 1 skips for DSM/6-hr, Gate 2 OM timing check is always mandatory and never bypassed). Market list cached per (city, date) in `_market_cache` — avoids repeated Kalshi fetches on repeat push events. Always bids at MAX_ENTRY_CENTS (98¢) limit — no orderbook pre-fetch needed.
+- **cli_push_trigger.py**: Handles `cli`, `dsm`, `six_hour_high` event types. Dedup: (city, date) for cli/dsm; (city, date, window) for 6hr. DSM buffer: confirmed_high -= 1 (DSM occasionally +1°F above CLI). 6-hr midnight window check: rejects ET's 00Z-06Z window (spans LST midnight). LST_OFFSETS keyed by tz name NOT city name — always use `CITIES[city]["tz"]` first.
 - **obs_exit_monitor.py**: Continuous daemon (KeepAlive launchctl). Polls ASOS every 5min, KNYC every 60min. Hard-exits NO-on-greater when min_lower_f > floor_strike, YES-on-between when min_lower_f > cap_strike. Only checks target_date == local today.
 - **paper_trading/**: SQLite SDK with Kelly sizing, calibration tracking, Brier score
 - **Kalshi series active**: boston/chicago/dc/houston/lasvegas/miami/minneapolis/okc/philly/sanantonio/sfo/seattle/austin
@@ -307,6 +308,18 @@ Details in `polymarket/LEARNINGS.md`.
 2. **ASOS/IEM fetches must use LOCAL day boundaries.** UTC midnight-to-midnight cuts off PT cities at 4 PM local — misses the afternoon high entirely. Always convert local midnight → UTC for query bounds.
 3. **backtest_v3.py CLI vs ASOS gap result (-0.17°F) is wrong** — violated both rules above. Do not cite it. Rerun before using.
 
+## 📋 SOPs — Read These Before Acting
+
+When a task matches one of these, **read the SOP first** before doing anything:
+
+| Task | SOP location |
+|---|---|
+| Reset a paper trader's state (bug fix, formula change, clean re-test) | `polymarket/RESET_TRADER.md` |
+
+**How SOPs get found:** Either listed here (guaranteed) OR via `qmd query "how to X"` (semantic search). If you're about to do something operational and you're not sure of the right process — search first.
+
+---
+
 ## 📋 Open TODOs
 
 ### ✅ DST day-boundary bug — FIXED (prior sessions, confirmed 2026-03-07)
@@ -323,18 +336,6 @@ Verified by code audit 2026-03-07 morning. Git history: afdc614, 920ef8f, 4b544a
 2. **HIGH** `polymarket/requirements.txt` — run `.venv/bin/pip freeze > requirements.txt` and commit
 3. **MEDIUM** Clear stale stderr logs (nws_obs_trader, obs_exit_monitor) — full of old netCDF4 errors burying real ones
 4. **LOW** Document Python version fragility (venv symlink → python3.13) in a SETUP.md
-
----
-
-## 🔴 MUST BRING UP WITH IAN (remove when done)
-
-### Low-Offset Calibration Model (trough_passed_signal)
-- Sub-agent `low-offset-model` spawned 2026-03-05 to train a calibrated offset table for lows
-  (analogous to the high-offset table used by peak_passed_signal)
-- Results will be in `polymarket/intraday/low_offset_model.md` (writeup) and likely
-  `polymarket/intraday/low_offset_model.json` (the table itself)
-- **Do NOT implement yet** — just train and report. Ian must review before integration.
-- Bring this up every session until removed from MEMORY.md.
 
 ---
 
