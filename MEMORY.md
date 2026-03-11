@@ -364,7 +364,9 @@ Files moved to `polymarket/archive/`. Launchctl agents unloaded.
 ## Dashboard
 Always restart the dashboard after making changes to dashboard.py:
 ```bash
-pkill -f "python.*dashboard"; sleep 1; launchctl kickstart gui/$(id -u)/com.trady.dashboard
+# pkill -f won't work — dashboard runs as Python.app (capital P). Use kill directly:
+kill $(launchctl list | grep dashboard | awk '{print $1}' | grep -v -) 2>/dev/null; sleep 1
+launchctl kickstart gui/$(id -u)/com.trady.dashboard
 ```
 
 ## Browser Access
