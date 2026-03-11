@@ -1,5 +1,14 @@
 # TOOLS.md - Environment & Setup Notes
 
+## qmd — Semantic Search
+- **Binary**: `/Users/ian/.bun/bin/qmd` (in PATH)
+- **Collections**: `workspace` (`~/.openclaw/workspace/**/*.md`), `polymarket` (`polymarket/**/*.md`)
+- **Use instead of grep** for conceptual/decision searches
+- `qmd query "..."` — hybrid semantic + reranking (~8s, best results)
+- `qmd search "..."` — BM25 keyword only (instant, good for exact strings)
+- `qmd embed` — re-embed after adding new markdown files
+- See AGENTS.md for full usage guide
+
 ## Machine
 - Host: Ian's MacBook Pro (arm64, macOS 15.1)
 - Shell: zsh
@@ -26,6 +35,25 @@ pip install ta           # Technical analysis (ADX, Bollinger Bands for regime f
 pip install scipy        # Statistical distributions (Poisson for count models)
 pip install py-clob-client  # Polymarket CLOB SDK (when ready to trade live)
 ```
+
+## Paper Trading DB — Field Conventions (READ BEFORE DIAGNOSING BUGS)
+
+The `trades` table uses **different conventions** for live trades vs paper simulator trades:
+
+| Field | Live trades (`twc_morning`, etc.) | Paper simulators (`twc_m_*`) |
+|---|---|---|
+| `market_price` | YES ask at entry time | **limit price posted** (fill_monitor reads this) |
+| `dollar_size` | Kelly-sized ($3–25) | Fixed $50/trade for testing (TWAP: 4×$12.50 slices) |
+| `fill_status` | `assumed` / `deferred` / `immediate` | `limit_pending` → `deferred` on fill |
+| `fill_price` | Price actually filled at | Set by fill_monitor when Kalshi trade ≤ limit |
+
+**Why `market_price` stores limit price for paper traders**: `paper_trading/fill_monitor.py` reads `market_price` as the limit to check — this is intentional and documented in `paper_trader.py`.
+
+**`twc_m_s15`** is the most patient strategy (bids at `ask - 5¢`). Low fill rate is expected by design — it only fills when the market comes down.
+
+**Legacy records** (pre-paper_trader module): some old trades have `fill_status='filled'` instead of `'deferred'`, and odd dollar_sizes. These are harmless artifacts from before the paper_trader module existed.
+
+---
 
 ## Kalshi API — Key Facts (v3.8)
 
