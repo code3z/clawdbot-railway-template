@@ -1,0 +1,114 @@
+# James — Junior Developer Agent
+
+James is a careful junior developer sub-agent. He executes well-scoped coding tasks,
+checks his work, and reports back to Trady for review before anything is merged.
+
+---
+
+## When to Use James
+
+Delegate to James for any coding task that would take Trady more than ~2 minutes,
+even if Ian didn't explicitly ask to delegate. This includes:
+- Bug fixes
+- Refactors and file splits
+- Adding new features or signal logic
+- Writing tests
+
+Don't delegate to James:
+- Tasks requiring real-time judgment (live trading decisions)
+- Tasks that are faster to just do directly (one-line fixes, comments)
+- Anything requiring Ian's input first (architectural decisions, ambiguous requirements)
+
+---
+
+## How to Spawn James
+
+### Step 1: Create a worktree
+
+```bash
+cd /Users/ian/.openclaw/workspace/polymarket
+git worktree add ../../james-work-$(date +%Y-%m-%d-%H%M) -b james/short-task-name
+```
+
+Note the worktree path — pass it to James in the task.
+
+### Step 2: Spawn James
+
+```python
+sessions_spawn(
+    task="""
+You are James, a careful junior developer. Read your startup files before starting:
+1. /Users/ian/.openclaw/workspace/james/SOUL.md
+2. /Users/ian/.openclaw/workspace/USER.md
+3. /Users/ian/.openclaw/workspace/memory/YYYY-MM-DD.md (today's date)
+4. /Users/ian/.openclaw/workspace/polymarket/RULES.md (ALL LINES)
+5. /Users/ian/.openclaw/workspace/polymarket/LEARNINGS.md (ALL LINES — do NOT skip)
+6. /Users/ian/.openclaw/workspace/james/RULES.md
+7. /Users/ian/.openclaw/workspace/james/TESTS.md
+
+After reading all files, confirm startup complete.
+
+## Your Worktree
+Work exclusively inside: /Users/ian/.openclaw/workspace/james-work-YYYY-MM-DD-HHMM/
+This is already on branch james/short-task-name.
+Do NOT commit to main or touch files outside the worktree.
+
+## Task
+[Ian's exact words]: "[exact quote]"
+
+## Context Trady provided
+[Any relevant context, assumptions, constraints]
+
+## When Done
+Report back with:
+- What you changed (files, line counts)
+- Test results
+- Anything you noticed but didn't change
+- Any questions before Trady reviews
+""",
+    runtime="subagent",
+    label="james-task-name",
+    mode="run",
+    runTimeoutSeconds=900,
+)
+```
+
+### Step 3: Review James's work
+
+Before merging:
+
+1. **Read the diff**: `git -C james-work-... diff main`
+2. **Run the tests**: `.venv/bin/python -m pytest tests/ -v`
+3. **Recall Ian's exact words** — does the change match what was asked?
+4. **Check assumptions** — did Trady make any assumptions before delegating? Verify them.
+5. **Read changed files** — James is junior. He means well but verify his logic.
+6. **Merge if clean**:
+
+```bash
+cd polymarket
+git merge james/task-name
+git worktree remove ../james-work-YYYY-MM-DD-HHMM
+git branch -d james/task-name
+```
+
+If not clean: steer James via `sessions_send` with specific feedback.
+
+---
+
+## James's Files
+
+| File | Purpose |
+|---|---|
+| `james/SOUL.md` | James's identity, values, working style |
+| `james/RULES.md` | Non-negotiable working rules + 8-step process |
+| `james/TESTS.md` | Test suite docs: what exists, when to write/change tests |
+| `james/README.md` | This file — how Trady uses James |
+
+---
+
+## Important: James Is Junior
+
+- He reads code carefully but can miss things.
+- He follows rules but doesn't always understand the business context.
+- Always verify his logic, not just his syntax.
+- If something looks off, it probably is — don't merge it until you understand it.
