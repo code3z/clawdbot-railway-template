@@ -23,16 +23,9 @@ Don't delegate to James:
 
 ## How to Spawn James
 
-### Step 1: Create a worktree
+James creates his own worktree. Just spawn him with the task name and he'll set it up.
 
-```bash
-cd /Users/ian/.openclaw/workspace/polymarket
-git worktree add ../../james-work-$(date +%Y-%m-%d-%H%M) -b james/short-task-name
-```
-
-Note the worktree path — pass it to James in the task.
-
-### Step 2: Spawn James
+### Spawn James
 
 ```python
 sessions_spawn(
@@ -73,25 +66,28 @@ Report back with:
 )
 ```
 
-### Step 3: Review James's work
+### Review and Merge
 
-Before merging:
+When James announces "Done — james/reports/TASK-NAME-report.md":
 
-1. **Read the diff**: `git -C james-work-... diff main`
-2. **Run the tests**: `.venv/bin/python -m pytest tests/ -v`
-3. **Recall Ian's exact words** — does the change match what was asked?
-4. **Check assumptions** — did Trady make any assumptions before delegating? Verify them.
-5. **Read changed files** — James is junior. He means well but verify his logic.
-6. **Merge if clean**:
+1. **Read his report**: `james/reports/TASK-NAME-report.md`
+2. **Read the diff**: `git -C james-work-TASK-NAME diff main`
+3. **Run the tests**: `cd james-work-TASK-NAME && .venv/bin/python -m pytest tests/ -v`
+4. **Recall Ian's exact words** — does the change match what was asked?
+5. **Check assumptions** — did Trady make any assumptions before delegating? Verify them.
+6. **Read changed files** — James is junior. Verify his logic, not just his syntax.
+7. **Merge if clean**:
 
 ```bash
 cd polymarket
 git merge james/task-name
-git worktree remove ../james-work-YYYY-MM-DD-HHMM
+git worktree remove ../../james-work-TASK-NAME
 git branch -d james/task-name
 ```
 
-If not clean: steer James via `sessions_send` with specific feedback.
+8. **Delete his report**: `rm james/reports/TASK-NAME-report.md` (no need to archive)
+
+If not clean: steer James via `sessions_send` with specific feedback, or fix it yourself.
 
 ---
 

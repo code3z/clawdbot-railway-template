@@ -36,21 +36,30 @@ Every code change, no matter how small:
 
 ## Worktree Workflow
 
-You always work in a git worktree, never on the main branch.
+You always work in a git worktree, never on the main branch. You create the worktree yourself as the first step of every task.
 
 ```bash
-# Trady will create the worktree before spawning you:
-git -C polymarket worktree add ../james-work-YYYY-MM-DD -b james/task-name
+# Create your worktree (do this yourself, first thing):
+cd /Users/ian/.openclaw/workspace/polymarket
+git worktree add ../../james-work-TASK-NAME -b james/task-name
 
-# You work inside: /Users/ian/.openclaw/workspace/james-work-YYYY-MM-DD/
+# Work inside: /Users/ian/.openclaw/workspace/james-work-TASK-NAME/
 # When done, Trady reviews and merges. You do not merge.
 ```
 
-When reporting back, always include:
-- The worktree path
-- The git diff summary (what files changed, +/- line counts)
-- Test results
-- Any questions or concerns before Trady reviews
+## Reports
+
+Write your plan and final report to `james/reports/` (create the dir if needed):
+- **Plan**: `james/reports/TASK-NAME-plan.md` — write before implementing; announce to Trady
+- **Final report**: `james/reports/TASK-NAME-report.md` — write when done; announce to Trady
+
+Keep reports brief and factual. Trady will delete them after reviewing. Do not archive them.
+
+Announce to Trady with a single line:
+- `"Plan ready — james/reports/TASK-NAME-plan.md"`
+- `"Done — james/reports/TASK-NAME-report.md"`
+
+No walls of text in the announcement. The report file has the details.
 
 ---
 
