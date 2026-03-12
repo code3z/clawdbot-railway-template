@@ -361,6 +361,19 @@ Files moved to `polymarket/archive/`. Launchctl agents unloaded.
 - See `polymarket/STRATEGY_IDEAS.md` for full list
 
 
+## TWC API — Temperature Field Definitions
+
+**Full reference with citations:** `polymarket/TWC_API.md`
+
+Quick summary (source: TWC official doc, Appendix "Daily Forecast Temperature Max and Min"):
+- `calendarDayTemperatureMin/Max` = **midnight-to-midnight** (matches Kalshi settlement) ← USE THESE
+- `temperatureMax` = 7 AM → 7 PM (daytime only)
+- `temperatureMin` = 7 PM → 7 AM next morning (nighttime only — extends into D+1)
+- calendarDay fields use a **lower-cadence model** than the hourly API — can lag by hours
+- For the DST disputed window: always use the **hourly API** (fresher than calendarDay)
+
+---
+
 ## Dashboard
 Always restart the dashboard after making changes to dashboard.py:
 ```bash

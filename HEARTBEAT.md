@@ -53,7 +53,11 @@ If it's been a while since last Simmer check:
 At first heartbeat of the day (after 8 AM ET):
 1. Daemon health: `launchctl list | grep trady` — flag any non-zero exit codes
 2. Forecast log freshness: check mtime of `forecast_logs/forecasts.jsonl` — warn if >8h old
-3. Log error scan: grep last 50 lines of `forecast_logs/ensemble_trader.stdout.log`, `nws_obs_trader.stdout.log`, `obs_exit_monitor.stdout.log` for Traceback/Error
+3. Log error scan: grep last 50 lines of these logs for Traceback/Error/NameError:
+   - `forecast_logs/wethr_push_client.stdout.log` ← obs signals (confirmed, peak_passed, trough) run here
+   - `forecast_logs/ensemble_trader.stdout.log`
+   - `forecast_logs/twc_morning_trader.stdout.log`
+   - NOTE: `nws_obs_trader.stdout.log` is STALE — daemon was unloaded 2026-03-10, do NOT check it
 4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
 5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
 

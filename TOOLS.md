@@ -1,5 +1,22 @@
 # TOOLS.md - Environment & Setup Notes
 
+## agent-browser — Browser Automation CLI
+- **Binary**: `/opt/homebrew/bin/agent-browser` (in PATH)
+- **Use this instead of the `browser` tool** for any web task — no Chrome extension relay needed, call directly via `exec`
+- Browser daemon persists across chained calls (use `&&` to chain)
+- **Key commands**:
+  - `agent-browser open <url>` — navigate
+  - `agent-browser snapshot` — accessibility tree with refs (for AI navigation)
+  - `agent-browser snapshot -i` — interactive elements only
+  - `agent-browser click @e2` — click by ref from snapshot
+  - `agent-browser fill @e3 "text"` — fill input
+  - `agent-browser get text @e1` — extract text
+  - `agent-browser screenshot [path]` — screenshot
+  - `agent-browser --auto-connect snapshot` — connect to existing Chrome tab
+  - `--session-name <name>` — persist cookies/localStorage across runs
+- **Chaining example**: `agent-browser open url && agent-browser wait --load networkidle && agent-browser snapshot`
+- **For logged-in sites**: use `--session-name` to save/restore cookies (Kalshi, etc.)
+
 ## qmd — Semantic Search
 - **Binary**: `/Users/ian/.bun/bin/qmd` (in PATH)
 - **Collections**: `workspace` (`~/.openclaw/workspace/**/*.md`), `polymarket` (`polymarket/**/*.md`)
@@ -254,6 +271,26 @@ Common params (hourly): `station=KMIA&data=tmpf&year1=...&month1=...&day1=1&year
 ## Running Processes
 Check PIDs in `polymarket/paper_trades/pid.txt` for paper_trader.py.
 Other processes (systematic_no.py, weather_oracle.py) — check with `ps aux | grep python`.
+
+## Polymarket Log Map — Where Orders Are Actually Logged
+
+**CLI push trigger** dispatches subprocesses. The trigger's own log (`cli_push_trigger.stdout.log`)
+only shows "Firing..." and "done (exit=N)". Actual order output is in per-city files:
+- Live orders: `forecast_logs/cli_push_{city}_live.log`
+- Paper orders: `forecast_logs/cli_push_{city}_paper.log`
+
+**Standard command to find all live orders placed today:**
+```bash
+grep "🟢 LIVE ORDER" polymarket/forecast_logs/cli_push_*_live.log
+```
+
+**Other trader logs** (output goes directly to their own stdout log):
+- TWC morning trader: `forecast_logs/twc_morning_trader.stdout.log`
+- Ensemble trader: `forecast_logs/ensemble_trader.stdout.log`
+- NWS obs trader: runs in-process inside wethr push client — `forecast_logs/wethr_push_client.stdout.log`
+
+**⚠️ Rule:** Never state "no orders were placed today" without running the standard command above.
+Log location must be verified before making any claim about system state.
 
 ## Temperature Data Sources Reference
 Full details in `polymarket/DATA_SOURCES.md`. Quick summary:

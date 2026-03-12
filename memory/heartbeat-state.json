@@ -3,7 +3,8 @@
     "simmer": 1772904049,
     "email": null,
     "calendar": null,
-    "push_system": 1741167620
+    "push_system": 1741683371
   },
-  "simmerNote": "API returning 'Missing or invalid Authorization header' for all auth formats (Bearer, X-API-Key, query param). Account may need claiming at https://simmer.markets/claim/reef-DZVP"
+  "simmerNote": "API returning 'Missing or invalid Authorization header' for all auth formats (Bearer, X-API-Key, query param). Account may need claiming at https://simmer.markets/claim/reef-DZVP",
+  "lastHeartbeat": "2026-03-11T04:41:00-05:00"
 }

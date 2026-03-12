@@ -133,6 +133,58 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+### 🌐 agent-browser — Browser Automation CLI (USE THIS, NOT the browser tool)
+
+`agent-browser` is a full browser automation CLI available at `/opt/homebrew/bin/agent-browser`. **Call it directly via `exec`** — no Chrome extension, no relay, no setup.
+
+**When to use it:**
+- Checking any website (Kalshi dashboard, weather pages, news, research)
+- Scraping structured data from pages
+- Logging into sites with `--session-name` to persist cookies
+- Any task where you'd otherwise hand-roll `requests` calls
+
+**Key commands:**
+```bash
+agent-browser open <url>                         # navigate
+agent-browser snapshot                           # accessibility tree with @refs (best for navigation)
+agent-browser snapshot -i                        # interactive elements only
+agent-browser click @e2                          # click ref from snapshot
+agent-browser fill @e3 "text"                    # fill input
+agent-browser get text @e1                       # extract text
+agent-browser screenshot [path]                  # screenshot
+agent-browser --session-name kalshi open url     # persistent login session
+```
+
+**Chaining** (browser daemon persists): use `&&` in a single `exec` call:
+```bash
+agent-browser open https://example.com && agent-browser wait --load networkidle && agent-browser snapshot
+```
+
+Full details in `TOOLS.md`.
+
+### 🔍 qmd — Semantic Search Across Workspace
+
+`qmd` is a hybrid BM25 + vector search tool for the workspace and polymarket docs. Use it instead of `grep` whenever searching for concepts, decisions, or code patterns.
+
+**Collections indexed:**
+- `workspace` — MEMORY.md, daily notes, AGENTS.md, TOOLS.md, etc.
+- `polymarket` — all markdown in `polymarket/` (LEARNINGS, RULES, code review reports, etc.)
+
+**Key commands:**
+```bash
+qmd query "how does peak_passed gate work"     # semantic + reranking (best, ~8s)
+qmd search "sqlite database locked"             # BM25 keyword only (instant)
+qmd get workspace/memory/2026-03-09.md         # fetch a specific file
+qmd collection list                             # see indexed collections
+qmd collection add <dir>                        # index a new directory
+```
+
+**When to use it:**
+- Looking for prior decisions, lessons, or architecture notes → `qmd query`
+- Searching for a specific error message or code string → `qmd search`
+- After adding new docs/memory files → `qmd embed` to update vectors
+- Prefer over `grep` for anything conceptual; grep is fine for exact strings in known files
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
@@ -268,6 +320,26 @@ Periodically (every few days), use a heartbeat to:
 Think of it like a human reviewing their journal and updating their mental model. Daily files are raw notes; MEMORY.md is curated wisdom.
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
+
+## Memory Search — Use QMD First
+
+**Always use `qmd query` as the primary search for operational questions**, not just `memory_search`.
+
+- `memory_search` only covers `MEMORY.md` and `memory/*.md` — personal context
+- `qmd query` indexes ALL workspace markdown: TOOLS.md, LEARNINGS.md, README, polymarket docs
+- For anything like "where does X log its output", "what's the command for Y", "how does Z work" — QMD has the answer; memory_search probably doesn't
+
+**When to use each:**
+- `qmd query "where does cli push trigger log orders"` → operational/system knowledge
+- `memory_search` → personal context, Ian's preferences, prior decisions, todos
+- When unsure: run QMD first; it's faster and covers more ground
+
+**Collections available:**
+- `qmd://polymarket/` — all polymarket markdown (76 files)
+- `qmd://workspace/` — all workspace markdown (124 files)
+
+**Never state system state (orders placed, daemon running, logs clean) without first checking
+the correct source.** If unsure which log file to check, run `qmd query "<daemon name> log"` first.
 
 ## Make It Yours
 
