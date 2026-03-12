@@ -25,6 +25,11 @@ Don't delegate to James:
 
 James creates his own worktree. Just spawn him with the task name and he'll set it up.
 
+### Choosing a mode
+
+- **`mode="run"`** — one-shot. Use when the plan is fully specified upfront. James implements and announces when done. Cannot pause or wait for input.
+- **`mode="session"`** — persistent. Use when James needs to present a plan first and wait for approval. James writes plan to `james/reports/X-plan.md`, announces, then idles. Steer him with `sessions_send(childSessionKey, "approved, go ahead")` when ready.
+
 ### Spawn James
 
 ```python
