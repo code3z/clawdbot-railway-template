@@ -13,3 +13,6 @@ npm-debug.log*
 
 # OS
 .DS_Store
+
+# Mr Data analysis scripts (generated, not tracked)
+mrdata/scripts/
