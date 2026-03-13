@@ -94,6 +94,23 @@ git worktree remove ../../james-work-TASK-NAME
 git branch -d james/task-name
 ```
 
+**If the diff shows out-of-scope files** (log files, DB, state files, etc.) but the actual commit(s) are clean, cherry-pick instead of merging:
+
+```bash
+# Find James's commit(s) — show commits on his branch not on main
+git log --oneline james/task-name ^main
+
+# Cherry-pick the clean commit(s) only
+cd polymarket
+git cherry-pick <commit-hash>
+
+# Clean up
+git worktree remove ../../james-work-TASK-NAME --force
+git branch -d james/task-name
+```
+
+Cherry-pick is the safe choice whenever the worktree has drifted (accumulated log files, state files, DB changes from daemons running while James worked). His actual commit is usually clean even when `git diff main --stat` looks alarming.
+
 8. **Delete his report**: `rm james/reports/TASK-NAME-report.md` (no need to archive)
 
 If not clean: steer James via `sessions_send` with specific feedback, or fix it yourself.
