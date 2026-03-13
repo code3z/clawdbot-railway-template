@@ -4,6 +4,34 @@ Keep this tight. Details belong in project docs, not here.
 
 ---
 
+## 🔍 Verifying Sub-Agent Claims — Check Source First
+
+When a sub-agent reports something about our own system (series names, config values, API behavior, file paths, architecture), **verify against our source code before running external API calls.**
+
+- Sub-agent says "KXHIGHTCHI has no open markets" → check `kalshi_config.py` for the actual series name first
+- Sub-agent says "the trader uses X logic" → read the trader file first
+- Sub-agent says "the DB has field Y" → check `paper_trading/db.py` first
+
+The failure mode: James guessed wrong series names (KXHIGHTCHI vs KXHIGHCHI), I re-ran his wrong queries instead of opening kalshi_config.py, "confirmed" his finding, and reported a false alarm to Ian.
+
+**Rule: One `grep` or `read` on the relevant config/source file takes 2 seconds and would have caught this immediately. Always do it before trusting a sub-agent's assertion about system internals.**
+
+---
+
+## 🔍 Reviewing James's Work — Strategy, Not Just Code
+
+When James completes a task, don't just check that the code works. Review the **strategy-level decisions** critically before presenting to Ian:
+
+- **Timing**: when does the trader run? Does that make sense given when markets open, when we have an advantage, when prices are stale vs. repriced?
+- **Entry logic**: are the thresholds, spread filters, and p-values consistent with the analysis that motivated the strategy?
+- **Scope**: does the implementation match the spec, or did James make assumptions that need flagging?
+
+James implements what he's told. I am responsible for catching anything that's strategically wrong — in the original spec OR in James's output — before it goes to Ian.
+
+**The failure mode (2026-03-13):** James built the bucket low trader to run at 6:30pm. I reviewed the code mechanics but didn't question the timing. Ian caught it: markets open at 10am, our edge is getting in early, Miami was under 30¢ at open and 68¢ by evening. Should have flagged this before presenting.
+
+---
+
 ## ✅ HIGH/LOW Symmetry Check — Do This Before Shipping Any Trading Logic
 
 Whenever I write or modify logic that handles HIGH markets, **immediately ask**: does the LOW branch handle the same cases? And vice versa.
