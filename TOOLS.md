@@ -250,6 +250,15 @@ Common params (hourly): `station=KMIA&data=tmpf&year1=...&month1=...&day1=1&year
 - Fetch already implemented: `intraday/build_trajectory_model.py` (1-min, LAX) and `intraday/build_low_offset_model_v2.py` (1-min, all cities)
 - Cache to `intraday/iem_cache/{STATION}_1min.json` or `{STATION}.json`
 
+## Polymarket API — ✅ ACTIVE
+- **API Key**: `019ce842-bcaa-767b-9ff9-b30faa66eb9f`
+- **Wallet address**: `0x81e62484b4073c294add56a4529d68da36a33d1a`
+- **Auth header**: `Authorization: Bearer <api_key>`
+- **Gamma API** (markets/profiles): `https://gamma-api.polymarket.com`
+- **CLOB API** (trading/prices): `https://clob.polymarket.com`
+- **Data API** (activity/positions): `https://data-api.polymarket.com`
+- **Docs**: https://docs.polymarket.com
+
 ## Free APIs (no auth, no account needed)
 | API | Base URL | What we use it for |
 |-----|----------|-------------------|
