@@ -180,6 +180,14 @@ This has been explained to me 10+ times. Stop forgetting it.
 
 ---
 
+## 🔄 twc_morning_trader — LaunchAgent & Process Rules (non-negotiable)
+
+- **KeepAlive:Crashed** is set in `com.trady.twc-morning-trader.plist`. On crash (non-zero exit), launchd auto-restarts within 60s. On normal exit (10 PM deadline), it does NOT restart. This is correct — do not change to `<true/>` (that causes an infinite spin loop after 10 PM).
+- **PID guard** (`_acquire_pid_lock`) prevents two instances running simultaneously. If you see "already running" on startup: the old process is still alive. Do NOT manually start a second instance — wait for it to finish or check why it's stuck.
+- **Never run `twc_morning_trader.py` manually while the plist is active** unless you've confirmed no running process via `ps aux | grep twc_morning`. Two loops on the same orders = repricing chaos = lost queue position = today's disaster (2026-03-13).
+- Markets open at **11 AM EDT** (including DST). 11:15 AM run is the target — 15 min after open.
+- **Plist path**: `~/Library/LaunchAgents/com.trady.twc-morning-trader.plist`
+
 ## 📋 twc_morning_trader Limit Order Rules (non-negotiable)
 
 1. **Never bid above max_limit.** max_limit = our_p - MIN_EDGE. If the market is above max_limit, leave the order resting AT max_limit — do not cancel. If market comes back down, we fill at a good price. Cancelling gives up free optionality.
@@ -251,7 +259,8 @@ This has been explained to me 10+ times. Stop forgetting it.
 - **position_updater.py**: Runs at X:30 + 11:30am, model=ensemble_with_updates — same entries as ensemble_trader but exits early on forecast flip (shift >20pp + neg edge); A/B vs ensemble_trader
 - **cli_strategy/trader.py**: CLI confirmed-high strategy. Three event sources now supported: `cli`, `dsm`, `six_hour_high`. All use the same three-part gate in `check_confidence()`. `valid_hour` is required; `peak_local_hour` optional (Gate 1 skips for DSM/6-hr, Gate 2 OM timing check is always mandatory and never bypassed). Market list cached per (city, date) in `_market_cache` — avoids repeated Kalshi fetches on repeat push events. Always bids at MAX_ENTRY_CENTS (98¢) limit — no orderbook pre-fetch needed.
 - **cli_push_trigger.py**: Handles `cli`, `dsm`, `six_hour_high` event types. Dedup: (city, date) for cli/dsm; (city, date, window) for 6hr. DSM buffer: confirmed_high -= 1 (DSM occasionally +1°F above CLI). 6-hr midnight window check: rejects ET's 00Z-06Z window (spans LST midnight). LST_OFFSETS keyed by tz name NOT city name — always use `CITIES[city]["tz"]` first.
-- **obs_exit_monitor.py**: Continuous daemon (KeepAlive launchctl). Polls ASOS every 5min, KNYC every 60min. Hard-exits NO-on-greater when min_lower_f > floor_strike, YES-on-between when min_lower_f > cap_strike. Only checks target_date == local today.
+- **obs_exit_monitor.py**: ARCHIVED (2026-03-04). Exits were too slow (bots already repriced). See MEMORY.md confirmed-fast section.
+- **obs_peak_trader.py**: NEW (2026-03-13). Two independent peak-passed signals (v8b sklearn + hardcoded gate) for HIGH markets only. Paper-only, $25 cap, MIN_EDGE=8%. Fires every 30 min via launchctl + on push new_high/cli_high events. Model: `obs_peak_trader`. Replaces archived nws_obs_confirmed.
 - **paper_trading/**: SQLite SDK with Kelly sizing, calibration tracking, Brier score
 - **Kalshi series active**: boston/chicago/dc/houston/lasvegas/miami/minneapolis/okc/philly/sanantonio/sfo/seattle/austin
 
@@ -357,6 +366,26 @@ in all critical day-boundary paths (`fetch_obs_cache_today`, `fetch_obs_cache_se
 Remaining `ZoneInfo` usages are civil clock-time gates ("is it past 8 AM?") — correct.
 Verified by code audit 2026-03-07 morning. Git history: afdc614, 920ef8f, 4b544a3.
 
+### ✅ TWC disputed window fix — FIXED (2026-03-12/13)
+`twc_forecast.py` now splits into Layer 1 (disputed window, midnight LDT→1 AM LDT) and
+Layer 2 (freshness correction, full LST window). Previously conflated both into one pass.
+
+### ✅ fill_price double-division — FIXED
+`twc_icon_adjusted_trader.py` line 124: `fill_price = sim_price` (was `sim_price / 100.0`).
+
+### ✅ settle_all delegation — DONE
+`settle_all.py` exists and is used by `com.trady.trade-settler`. No action needed.
+
+### ✅ test_cli_trader.py broken import — N/A
+File no longer exists. Not relevant.
+
+---
+
+### 🔲 Fill monitor: fetch both sides of orderbook for NO trades
+Currently the fill monitor only checks the YES ask side when simulating fills.
+For NO paper trades, it should check YES bids (NO fill = YES bid ≥ 100 - limit_price_cents).
+Ian confirmed this is needed (2026-03-13 morning). Not yet implemented.
+
 ---
 
 ### venv / launchctl cleanup (details in `polymarket/TODO_VENV.md`)
@@ -414,6 +443,22 @@ launchctl kickstart gui/$(id -u)/com.trady.dashboard
 **Ask Ian immediately when browser is blocked** — don't silently route around it.
 Say exactly: "Browser blocked — can you attach a Chrome tab to the OpenClaw extension?"
 If he doesn't respond by the next heartbeat, continue without browser access.
+
+---
+
+## 🚫 Never Hardcode Values Read From Logs
+
+When checking system state (running max temps, prices, counts), **always query the authoritative source** — the DB, a live API call, or the latest log line via grep/tail. Never read a value off the log with your eyes and type it into a script.
+
+The failure mode: I read `austin: 73°F` from the log at 18:21 UTC, hardcoded it, and ran analysis 22 minutes later at 18:43 UTC when austin had already hit 75°F. Presented stale data as fact.
+
+**The rule:** If the value could have changed since you read it, don't hardcode it. Use:
+```python
+# Correct: query the DB
+rows = db.execute("SELECT nws_high_f FROM push_extremes WHERE station=? AND date_str=?", ...).fetchone()
+# Correct: grep the latest log line
+# grep "KAUS" wethr_push_client.stdout.log | tail -1
+```
 
 ---
 
