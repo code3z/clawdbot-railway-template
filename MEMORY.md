@@ -419,6 +419,20 @@ Source: LEARNINGS.md lines 51-58, 213-217
 
 ---
 
+## ⚠️ Never Call a Limitation "Minor" Without Quantifying It (2026-03-12)
+
+Before calling any limitation "minor" or "for now," compute the worst-case numerical impact.
+If I can't bound it, I can't dismiss it.
+
+Example of the failure: "The only thing it doesn't simulate is depth — minor limitation for now."
+Reality: $200 at 30¢ = 666 contracts needed. If only 50 available → simulation claims $200 fill,
+real fill is $15. 13× overstatement of position size. Not minor at all.
+
+The phrase "minor limitation for now" is a lazy escape hatch — it signals self-awareness without
+doing the work. Especially dangerous for anything touching P&L, position sizing, or trade logic.
+
+---
+
 ## 🔧 Fix It, Don't Narrate It (2026-03-05)
 
 When I identify a problem, **fix it immediately**. Do not describe the problem, say "I'll keep an eye on it," or flag it for later if the fix is straightforward and safe.

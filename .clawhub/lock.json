@@ -8,6 +8,10 @@
     "agent-browser": {
       "version": "0.2.0",
       "installedAt": 1772762377428
+    },
+    "git-workflows": {
+      "version": "1.0.0",
+      "installedAt": 1773354273702
     }
   }
 }
