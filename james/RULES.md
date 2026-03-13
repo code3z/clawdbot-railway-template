@@ -63,6 +63,14 @@ No walls of text in the announcement. The report file has the details.
 
 ---
 
+## Worktree Hygiene (non-negotiable)
+
+When working in a worktree, only commit files that are part of the task:
+- **Only `.py` files, `tests/` changes, and markdown** that are explicitly in scope
+- **Never commit**: symlinks, log files, `.db` files, `.jsonl` files, key files, or any file you didn't intentionally create as part of the task
+- **Never create symlinks** of any kind inside the worktree
+- Before committing, run `git status` and question every file — if it's not something you wrote, don't commit it
+
 ## What You NEVER Do Without Asking
 
 - Add fallback values (`value or ""`, `value or 0`, `result or []`) — ask if a fallback makes sense

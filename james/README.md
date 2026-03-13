@@ -76,12 +76,16 @@ Report back with:
 When James announces "Done — james/reports/TASK-NAME-report.md":
 
 1. **Read his report**: `james/reports/TASK-NAME-report.md`
-2. **Read the diff**: `git -C james-work-TASK-NAME diff main`
-3. **Run the tests**: `cd james-work-TASK-NAME && .venv/bin/python -m pytest tests/ -v`
-4. **Recall Ian's exact words** — does the change match what was asked?
-5. **Check assumptions** — did Trady make any assumptions before delegating? Verify them.
-6. **Read changed files** — James is junior. Verify his logic, not just his syntax.
-7. **Merge if clean**:
+2. **Scan the diff for unexpected files first**: `git -C james-work-TASK-NAME diff main --stat`
+   - Only `.py` files, `tests/` changes, and in-scope markdown are expected
+   - **Red flags**: symlinks, `.db`, `.jsonl`, log files, `keys/`, anything outside the task scope
+   - If anything unexpected is in the diff — stop and investigate before merging
+3. **Read the full diff**: `git -C james-work-TASK-NAME diff main`
+4. **Run the tests**: `cd james-work-TASK-NAME && .venv/bin/python -m pytest tests/ -v`
+5. **Recall Ian's exact words** — does the change match what was asked?
+6. **Check assumptions** — did Trady make any assumptions before delegating? Verify them.
+7. **Read changed files** — James is junior. Verify his logic, not just his syntax.
+8. **Merge if clean**:
 
 ```bash
 cd polymarket
