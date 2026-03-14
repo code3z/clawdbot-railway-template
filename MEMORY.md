@@ -352,8 +352,16 @@ When a task matches one of these, **read the SOP first** before doing anything:
 | Task | SOP location |
 |---|---|
 | Reset a paper trader's state (bug fix, formula change, clean re-test) | `polymarket/RESET_TRADER.md` |
+| Archive a trader (retire, unload daemon, remove from dashboard) | `polymarket/ARCHIVE_TRADER.md` |
 
 **How SOPs get found:** Either listed here (guaranteed) OR via `qmd query "how to X"` (semantic search). If you're about to do something operational and you're not sure of the right process — search first.
+
+---
+
+## 🧹 TODO Hygiene Rule
+- When a task is done: **DELETE the line**, don't strike through or mark ✅ and leave it
+- When a code review file has all legitimate issues resolved: **DELETE the file**
+- Don't accumulate stale "done" items — if it's done, it's gone
 
 ---
 

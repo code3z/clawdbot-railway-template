@@ -12,6 +12,10 @@
     "git-workflows": {
       "version": "1.0.0",
       "installedAt": 1773354273702
+    },
+    "dynamic-ui": {
+      "version": "1.2.0",
+      "installedAt": 1773465073994
     }
   }
 }

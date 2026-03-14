@@ -55,10 +55,10 @@ At first heartbeat of the day (after 8 AM ET):
 2. Forecast log freshness: check mtime of `forecast_logs/forecasts.jsonl` — warn if >8h old
 3. Log error scan: grep last 50 lines of these logs for Traceback/Error/NameError:
    - `forecast_logs/wethr_push_client.stdout.log` ← obs signals (confirmed, peak_passed, trough) run here
-   - `forecast_logs/ensemble_trader.stdout.log`
+   - `forecast_logs/cli_push_trigger.stdout.log`
    - `forecast_logs/twc_morning_trader.stdout.log`
-   - `forecast_logs/between_bucket_trader.stdout.log` ← new 2026-03-14
-   - NOTE: `nws_obs_trader.stdout.log` is STALE — daemon was unloaded 2026-03-10, do NOT check it
+   - `forecast_logs/between_bucket_trader.stdout.log`
+   - NOTE: `nws_obs_trader.stdout.log` and `ensemble_trader.stdout.log` are STALE — daemons unloaded, do NOT check
 4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
 5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
 
@@ -86,6 +86,11 @@ At first heartbeat of the day (after 8 AM ET):
 - DB: `polymarket/paper_trades/paper_trades.db`
 - Logs: `polymarket/forecast_logs/forecasts.jsonl` and `cli_actuals.jsonl`
 - First real paper trade results: Feb 25 9 AM settler run (trades target Feb 24)
+
+## TODO: Recalibrate twc_bucket_low p-table ~2026-04-07
+City-specific p-values set 2026-03-14 on only 17 days of March data.
+Run `calibrate_twc_bucket_low.py` (or equivalent) after 3+ more weeks of D-1 evening data.
+Current values: miami=0.80, chicago=0.80, lax=0.65, nyc=0.50, denver=0.35, austin=0.35
 
 ## TODO: Rerun α calibration ~2026-03-27
 Run `twc_calibration.py` (or whichever calibration script) after 2 more weeks of trades.
