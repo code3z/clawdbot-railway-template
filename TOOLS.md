@@ -194,13 +194,24 @@ The `customer-historical-forecast-api.open-meteo.com` endpoint requires Professi
 
 ## TWC (The Weather Channel) Direct API — ✅ LIVE
 - **Key**: `adb6c94f2ec944c4b6c94f2ec9d4c47b` (trial key, full access)
-- **Endpoint**: `GET https://api.weather.com/v3/wx/forecast/daily/5day`
 - **Required header**: `Accept-Encoding: gzip`
-- **Params**: `geocode=lat,lon` | `units=e` (Fahrenheit) | `language=en-US` | `format=json` | `apiKey=KEY`
-- **Use `calendarDayTemperatureMax`** NOT `temperatureMax` — "calendar day" = local midnight-to-midnight ✅
-  - `temperatureMax` is daytime only (7am-7pm). Wrong for Kalshi settlement.
+- **Common params**: `geocode=lat,lon` | `units=e` (Fahrenheit) | `language=en-US` | `format=json` | `apiKey=KEY`
+- **Status**: ✅ Live as of 2026-02-23
+
+### Authorized Endpoints (trial key)
+| Endpoint | URL | Notes |
+|----------|-----|-------|
+| Daily 5-day | `GET https://api.weather.com/v3/wx/forecast/daily/5day` | Use `calendarDayTemperatureMax/Min` (midnight-to-midnight). NOT `temperatureMax` (daytime only). |
+| Hourly 2-day | `GET https://api.weather.com/v3/wx/forecast/hourly/2day` | Returns 48 hourly slots. `validTimeLocal` for time, `temperature` for °F. |
+| 15-minute | `GET https://api.weather.com/v3/wx/forecast/fifteenminute` | Param: `icaoCode=KXXX` (NOT geocode). Returns ~7h of 15-min slots. |
+| Intraday 3-day | `GET https://api.weather.com/v1/geocode/{lat}/{lon}/forecast/intraday/3day.json` | Different base URL pattern. |
+
+⚠️ `/v3/wx/forecast/hourly/48hour` does NOT exist on this key — returns 401. Use `/hourly/2day` (same 48 slots).
+
+### Key field notes
 - **Date field**: `validTimeLocal[:10]` — includes timezone offset, safe to parse
-- **Status**: ✅ Live in forecast_logger.py as of 2026-02-23
+- **Daily high**: use `calendarDayTemperatureMax` NOT `temperatureMax` — "calendar day" = local midnight-to-midnight ✅
+- **15-min endpoint**: requires `icaoCode` (e.g. `KNYC`), not `geocode`
 
 ## Weather.com RapidAPI (sangatpuria01) — ❌ DEAD
 - Akamai revoked provider credentials — all forecast endpoints return 401. Do not use.
