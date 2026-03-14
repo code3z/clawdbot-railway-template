@@ -69,3 +69,7 @@ At first heartbeat of the day (after 8 AM ET):
 - DB: `polymarket/paper_trades/paper_trades.db`
 - Logs: `polymarket/forecast_logs/forecasts.jsonl` and `cli_actuals.jsonl`
 - First real paper trade results: Feb 25 9 AM settler run (trades target Feb 24)
+
+## TODO: Rerun α calibration ~2026-03-27
+Run `twc_calibration.py` (or whichever calibration script) after 2 more weeks of trades.
+Current α=0.8 is empirically derived; recheck after more data accumulates.

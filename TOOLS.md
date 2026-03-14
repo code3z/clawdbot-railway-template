@@ -97,6 +97,16 @@ The `trades` table uses **different conventions** for live trades vs paper simul
 - `remaining_count`: contracts still resting
 - No `avg_yes_price` field (that doesn't exist)
 
+**Candlesticks** `GET /series/{series}/events/{event_ticker}/candlesticks`:
+- Params: `period_interval` (int minutes: 1 or 60), `start_ts`, `end_ts` (Unix timestamps)
+- Returns: `{"market_tickers": [...], "market_candlesticks": [[candle, ...], ...]}`
+- Each candle: `{"end_period_ts": int, "yes_ask": {...}, "yes_bid": {...}, "volume_fp": "0.00", "open_interest_fp": "..."}`
+- **Price fields use `close_dollars` NOT `close`**: `yes_ask["close_dollars"]`, `yes_bid["close_dollars"]`
+- Also: `open_dollars`, `high_dollars`, `low_dollars` in each yes_ask/yes_bid sub-object
+- Candles with no activity still appear but price fields will be absent (KeyError if not guarded)
+- Use `period_interval=1` for minute-level; hourly (60) returns fewer but price fields can be None if no trades that hour
+- **Always use minute-level (1) for order book price history** — hourly only shows trade prices, not resting order prices
+
 **Cancel Order** `DELETE /portfolio/orders/{order_id}`:
 - Returns zeroed order (remaining_count=0) not 204
 - Check `r.ok` for success
