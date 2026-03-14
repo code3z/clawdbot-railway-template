@@ -57,9 +57,26 @@ At first heartbeat of the day (after 8 AM ET):
    - `forecast_logs/wethr_push_client.stdout.log` ← obs signals (confirmed, peak_passed, trough) run here
    - `forecast_logs/ensemble_trader.stdout.log`
    - `forecast_logs/twc_morning_trader.stdout.log`
+   - `forecast_logs/between_bucket_trader.stdout.log` ← new 2026-03-14
    - NOTE: `nws_obs_trader.stdout.log` is STALE — daemon was unloaded 2026-03-10, do NOT check it
 4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
 5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
+
+## Between Bucket Trader (check every heartbeat)
+- `com.trady.between-bucket-trader` — runs daily at 17:00 UTC (noon LST)
+- Posts 6¢ GTD YES limits on HIGH between-markets for tomorrow, OM/TWC ±3°F gate
+- **stdout log**: `polymarket/forecast_logs/between_bucket_trader.stdout.log`
+- **stderr log**: `polymarket/forecast_logs/between_bucket_trader.stderr.log`
+- Check that it ran today: `grep "Done —" polymarket/forecast_logs/between_bucket_trader.stdout.log | tail -1`
+- Expect ~50 orders placed per day; warn if 0 or Traceback in stderr
+- Unfilled limits expire at midnight LST with P&L=0 (not losses) — settler handles this
+- Watch for fills in DB: `SELECT ticker, fill_status, fill_price FROM trades WHERE model='between_bucket' AND fill_status='deferred' ORDER BY id DESC LIMIT 10`
+
+## obs_peak_model + obs_peak_gate (check every heartbeat)
+- `com.trady.obs-peak-model` — runs every 30 min + on push events (new_high, cli_high, observation)
+- `com.trady.obs-peak-gate` — same schedule; independent hardcoded rule gate
+- Log files: `forecast_logs/obs_peak_model_trader.stdout.log`, `forecast_logs/obs_peak_gate_trader.stdout.log`
+- Check for errors; confirm both appear in `launchctl list | grep trady`
 
 ## Notes
 - Paper trades settled by launchctl: `com.trady.trade-settler` (9 AM ET daily)
