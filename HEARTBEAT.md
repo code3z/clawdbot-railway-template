@@ -58,7 +58,7 @@ At first heartbeat of the day (after 8 AM ET):
    - `forecast_logs/cli_push_trigger.stdout.log`
    - `forecast_logs/twc_morning_trader.stdout.log`
    - `forecast_logs/between_bucket_trader.stdout.log`
-   - NOTE: `nws_obs_trader.stdout.log` and `ensemble_trader.stdout.log` are STALE — daemons unloaded, do NOT check
+   - NOTE: `nws_obs_trader.stdout.log` is STALE — daemon unloaded, do NOT check
 4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
 5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
 
@@ -71,6 +71,15 @@ At first heartbeat of the day (after 8 AM ET):
 - Expect ~50 orders placed per day; warn if 0 or Traceback in stderr
 - Unfilled limits expire at midnight LST with P&L=0 (not losses) — settler handles this
 - Watch for fills in DB: `SELECT ticker, fill_status, fill_price FROM trades WHERE model='between_bucket' AND fill_status='deferred' ORDER BY id DESC LIMIT 10`
+
+## end_of_day trader (check every heartbeat during evening hours)
+- `com.trady.end-of-day-trader` — runs every 30 min via StartInterval=1800
+- Activates per city in the last 5h before LST midnight (7pm–midnight LST)
+- Signal 1: NO trades on LESS/GREATER/BETWEEN when temp confirmed outside bucket
+- Signal 2: YES trades on BETWEEN when CLI confirms the bucket and temp is locked
+- Log: `forecast_logs/end_of_day_trader.stdout.log`
+- Check: `launchctl list | grep end-of-day` — should show PID during window hours
+- Watch for penny_blocks: `tail forecast_logs/penny_blocks.jsonl` (markets with ask ≤ 1¢)
 
 ## obs_peak_model + obs_peak_gate (check every heartbeat)
 - `com.trady.obs-peak-model` — runs every 30 min + on push events (new_high, cli_high, observation)
