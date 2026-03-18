@@ -1365,6 +1365,11 @@ proxy.on("proxyReqWs", (_proxyReq, req) => {
   attachGatewayAuthHeader(req);
 });
 
+// Trading dashboard proxy — /dashboard → 127.0.0.1:4321
+const dashboardProxy = httpProxy.createProxyServer({ target: "http://127.0.0.1:4321", proxyTimeout: 10_000, timeout: 10_000 });
+dashboardProxy.on("error", (_err, _req, res) => { if (res && !res.headersSent) res.status(503).type("text/plain").send("Dashboard unavailable"); });
+app.use("/dashboard", requireSetupAuth, (req, res) => dashboardProxy.web(req, res));
+
 app.use(requireDashboardAuth, async (req, res) => {
   // If not configured, force users to /setup for any non-setup routes.
   if (!isConfigured() && !req.path.startsWith("/setup")) {
