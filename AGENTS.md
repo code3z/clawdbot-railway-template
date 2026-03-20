@@ -6,28 +6,47 @@ This folder is home. Treat it that way.
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
 
+## Environment
+
+- **Runtime**: Railway VPS (Linux)
+- **Persistent storage**: `/data/` — everything here survives deploys
+- **Ephemeral**: anything outside `/data/` is wiped on next Railway deploy — do not store notes, code, or config there
+- **GitHub repo**: <https://github.com/code3z/clawdbot-railway-template> — used for overall workspace config only. Do NOT commit notes, code edits, or working files there.
+
+## Paths
+
+| What | Path |
+|---|---|
+| Workspace root (SOUL, USER, MEMORY, AGENTS, TOOLS, memory/) | `/data/workspace/` |
+| Trading project root (README, RULES, LEARNINGS, SKILLS, all traders) | `/data/workspace/trading/` |
+| Notes and research | `/data/workspace/notes/` |
+
 ## Every Session
 
-Before doing anything else, read ALL of the following files in order. For each file, use NO `limit` parameter. If the tool output says "X more lines in file", call `read` again with `offset=N` until you reach the end. Do not stop early.
+Before doing anything else, read ALL of the following files in order. For each file, use NO `limit` parameter. **If the tool output says "X more lines in file" or "[N more lines in file. Use offset=M to continue.]", call `read` again with `offset=M` immediately. Repeat until output does NOT contain "more lines in file". Never stop early. Never skim.**
 
 **Startup sequence (do all 8, in order, before responding to the user):**
 
-1. `SOUL.md` — who you are
-2. `USER.md` — who you're helping
-3. `memory/YYYY-MM-DD.md` (today + yesterday) — recent context
-4. **MAIN SESSION ONLY:** `MEMORY.md` — long-term memory (do NOT load in group chats / Discord)
-5. `polymarket/README.md` — system architecture
-6. `polymarket/RULES.md` — 30 hard rules, mandatory, ALL LINES
-7. `polymarket/LEARNINGS.md` — **MANDATORY, ALL LINES, NO EXCEPTIONS**
-   - Use `read(file_path=..., offset=1)` — NO limit parameter
-   - When output says "[N more lines in file. Use offset=M to continue.]" → call `read(file_path=..., offset=M)` immediately
+1. `/data/workspace/SOUL.md` — who you are
+2. `/data/workspace/USER.md` — who you're helping
+3. `/data/workspace/memory/YYYY-MM-DD.md` (today + yesterday) — recent context
+4. `/data/workspace/MEMORY.md` — long-term memory (load in ALL sessions, including Discord)
+5. `/data/workspace/trading/README.md` — system architecture
+6. `/data/workspace/trading/RULES.md` — 30 hard rules, mandatory, ALL LINES
+7. `/data/workspace/trading/LEARNINGS.md` — **MANDATORY, ALL LINES, NO EXCEPTIONS**
+   - Use `read(path=..., offset=1)` — NO limit parameter ever
+   - When output says "[N more lines in file. Use offset=M to continue.]" → call `read(path=..., offset=M)` immediately
    - Repeat until output does NOT contain "more lines in file"
    - Do NOT stop after the first call. Do NOT use limit=. Do NOT skim.
    - These rules cost real money when ignored.
-8. `polymarket/SKILLS.md` — current model capabilities
+8. `/data/workspace/trading/SKILLS.md` — current model capabilities
 
 **After completing all 8 steps**, output exactly this line before greeting the user:
 `[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY-TODAY ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓ SKILLS ✓]`
+
+**If ANY file failed to load (ENOENT, truncated, or unconfirmed complete read), output instead:**
+`[STARTUP ERROR: <list which files failed or were incomplete>]`
+**and stop — do not proceed until the user acknowledges.**
 
 If you skip any file or read LEARNINGS.md partially, you are violating a hard rule. There is no excuse.
 
@@ -37,17 +56,15 @@ Don't ask permission. Just do it.
 
 You wake up fresh each session. These files are your continuity:
 
-- **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened
-- **Long-term:** `MEMORY.md` — your curated memories, like a human's long-term memory
+- **Daily notes:** `/data/workspace/memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened
+- **Long-term:** `/data/workspace/MEMORY.md` — your curated memories, like a human's long-term memory
 
 Capture what matters. Decisions, context, things to remember. Skip the secrets unless asked to keep them.
 
 ### 🧠 MEMORY.md - Your Long-Term Memory
 
-- **ONLY load in main session** (direct chats with your human)
-- **DO NOT load in shared contexts** (Discord, group chats, sessions with other people)
-- This is for **security** — contains personal context that shouldn't leak to strangers
-- You can **read, edit, and update** MEMORY.md freely in main sessions
+- **Load in ALL sessions** — this is Ian's private Discord, not a public group chat
+- You can **read, edit, and update** MEMORY.md freely
 - Write significant events, thoughts, decisions, opinions, lessons learned
 - This is your curated memory — the distilled essence, not raw logs
 - Over time, review your daily files and update MEMORY.md with what's worth keeping
@@ -65,7 +82,7 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 - Don't exfiltrate private data. Ever.
 - Don't run destructive commands without asking.
-- `trash` > `rm` (recoverable beats gone forever)
+- Prefer `mv` to a temp location over `rm` when possible (recoverable beats gone forever)
 - When in doubt, ask.
 
 ## External vs Internal
@@ -133,34 +150,9 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
-### 🌐 agent-browser — Browser Automation CLI (USE THIS, NOT the browser tool)
+### 🌐 Browser
 
-`agent-browser` is a full browser automation CLI available at `/opt/homebrew/bin/agent-browser`. **Call it directly via `exec`** — no Chrome extension, no relay, no setup.
-
-**When to use it:**
-- Checking any website (Kalshi dashboard, weather pages, news, research)
-- Scraping structured data from pages
-- Logging into sites with `--session-name` to persist cookies
-- Any task where you'd otherwise hand-roll `requests` calls
-
-**Key commands:**
-```bash
-agent-browser open <url>                         # navigate
-agent-browser snapshot                           # accessibility tree with @refs (best for navigation)
-agent-browser snapshot -i                        # interactive elements only
-agent-browser click @e2                          # click ref from snapshot
-agent-browser fill @e3 "text"                    # fill input
-agent-browser get text @e1                       # extract text
-agent-browser screenshot [path]                  # screenshot
-agent-browser --session-name kalshi open url     # persistent login session
-```
-
-**Chaining** (browser daemon persists): use `&&` in a single `exec` call:
-```bash
-agent-browser open https://example.com && agent-browser wait --load networkidle && agent-browser snapshot
-```
-
-Full details in `TOOLS.md`.
+Use the `browser` tool. Check `TOOLS.md` for any available CLI browser tools and their paths.
 
 ### 🔍 qmd — Semantic Search Across Workspace
 
@@ -168,7 +160,7 @@ Full details in `TOOLS.md`.
 
 **Collections indexed:**
 - `workspace` — MEMORY.md, daily notes, AGENTS.md, TOOLS.md, etc.
-- `polymarket` — all markdown in `polymarket/` (LEARNINGS, RULES, code review reports, etc.)
+- `polymarket` — all markdown in `/data/workspace/trading/` (LEARNINGS, RULES, code review reports, etc.)
 
 **Key commands:**
 ```bash
@@ -215,7 +207,7 @@ Every code change, no matter how small, follows these 8 steps in order:
 4. **Implement** — make the changes surgically; only touch what's in scope
 5. **Test** — syntax check (`ast.parse`), import check, and a logic test (unit test or simulation); do NOT skip because "it looks right"
 6. **Sanity check** — read the changed code in context; confirm it makes rational sense end-to-end
-7. **Commit** — commit with a clear message describing what changed and why
+7. **Commit and push** — commit with a clear message describing what changed and why, then `git push` immediately
 8. **Check again** — re-read the final state; confirm nothing was accidentally broken
 
 If a test fails, fix it before committing. If a sanity check reveals a problem, fix it before committing.
@@ -335,8 +327,8 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 - When unsure: run QMD first; it's faster and covers more ground
 
 **Collections available:**
-- `qmd://polymarket/` — all polymarket markdown (76 files)
-- `qmd://workspace/` — all workspace markdown (124 files)
+- `qmd://polymarket/` — all trading project markdown (`/data/workspace/trading/`)
+- `qmd://workspace/` — all workspace markdown (`/data/workspace/`)
 
 **Never state system state (orders placed, daemon running, logs clean) without first checking
 the correct source.** If unsure which log file to check, run `qmd query "<daemon name> log"` first.

@@ -137,8 +137,8 @@ The `trades` table uses **different conventions** for live trades vs paper simul
 - **Docs**: https://wethr.net/edu/api-docs
 
 ## Synoptic Data API — ✅ ACTIVE
-- **API Key**: `Kutc00GJ9R8IQBAZtnb5TIZu7NTvQ5k6WyyWR4osM1` (in `polymarket/keys/synoptic_api_key.txt`)
-- **Token** (generated from key): `b77ae1e010e344d8863bf53aeb8e5ac1` (in `polymarket/keys/synoptic_token.txt`)
+- **API Key**: `KuTPwfvP4wItgzgMnWRStGQdrsT3oRqLWFpSlDLX3z` (in `polymarket/keys/synoptic_api_key.txt`)
+- **Token** (generated from key): `e9971929005e4d0f833d92b4603ea87c` (in `polymarket/keys/synoptic_token.txt`)
 - Token generation: `GET https://api.synopticdata.com/v2/auth?apikey=KEY`
 - Latest obs: `GET https://api.synopticdata.com/v2/stations/latest?stid=KMIA&vars=air_temp&token=TOKEN`
 - Timeseries: `GET https://api.synopticdata.com/v2/stations/timeseries?stid=KMIA&vars=air_temp&start=YYYYMMDDHHMM&end=YYYYMMDDHHMM&token=TOKEN`
@@ -150,15 +150,37 @@ The `trades` table uses **different conventions** for live trades vs paper simul
 - **Key**: `gj0wtTIZSyVbtQyP` (also in `polymarket/keys/open_meteo_api_key.txt`)
 
 ### Which tier to use:
-| API | URL | Auth |
-|-----|-----|------|
-| Forecast (predictions) | `customer-api.open-meteo.com` | `&apikey=KEY` |
-| Historical Forecast | `historical-forecast-api.open-meteo.com` | **none — free tier** |
-| Ensemble | `ensemble-api.open-meteo.com` | **none — free tier** |
-| Archive (actuals) | `archive-api.open-meteo.com` | **none — free** |
+| API | URL | Auth | Use for |
+|-----|-----|------|---------|
+| Forecast (predictions) | `customer-api.open-meteo.com` | `&apikey=KEY` | Live trading — what OM predicts RIGHT NOW |
+| **Historical Forecast** | `historical-forecast-api.open-meteo.com` | **none — free** | **ML training — what OM predicted on a PAST date** |
+| Ensemble | `ensemble-api.open-meteo.com` | **none — free tier** | Ensemble spread |
+| Archive (actuals) | `archive-api.open-meteo.com` | **none — free** | Ground truth actuals ONLY — NOT for training features |
 
 **Rule: use paid (`customer-*`) for live forecast predictions only. Use free endpoints for ensembles and historical data.**
 The `customer-historical-forecast-api.open-meteo.com` endpoint requires Professional plan (we don't have it). Always use the free `historical-forecast-api.open-meteo.com` instead.
+
+### 🔴 CRITICAL: Historical Forecast API ≠ Archive API — DO NOT CONFUSE THESE
+
+**Archive API** (`archive-api.open-meteo.com`): Returns what the weather **actually did** (grid-interpolated observations). Use ONLY for ground truth validation.
+
+**Historical Forecast API** (`historical-forecast-api.open-meteo.com`): Returns what OM's forecast model **predicted** on a past date — exactly what live trading uses. Available from 2022 onward.
+
+**For ML training features that use OM forecast data (e.g. `om_remaining_upside_f`): ALWAYS use Historical Forecast API, NEVER Archive API.** Using Archive creates a train/serve skew: the model learns from actual temperature outcomes but in live trading receives forecast predictions. When OM underestimates the actual high, the model fires on a false "no more upside" signal.
+
+Example — get what OM predicted for Atlanta on March 14, 2026 at hourly resolution:
+```python
+import requests
+r = requests.get("https://historical-forecast-api.open-meteo.com/v1/forecast", params={
+    "latitude": 33.6367, "longitude": -84.4281,
+    "start_date": "2026-03-14", "end_date": "2026-03-14",
+    "hourly": "temperature_2m",
+    "temperature_unit": "fahrenheit",
+    "timezone": "America/New_York",
+    "models": "best_match",
+})
+```
+This returns what OM's model said would happen on March 14 — matching exactly what `_fetch_om_hourly()` fetches in live trading.
 
 ## Tomorrow.io Weather API — ⚠️ UNUSED (key saved from weather_complex.py)
 - **Key**: `wmnV7bvl2sPInPcIpRkd9gAG34osPiFd`

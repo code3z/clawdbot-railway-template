@@ -1,5 +1,18 @@
 # james.md — James's Memory File
 
+## ⚠️ Reviewing James's Output — Do This Before Reporting to Ian
+
+1. Run the tests yourself. Don't trust James's reported count.
+2. Read every new/modified file — `git diff HEAD~1` or `cat` the file directly.
+3. For new test files, scan for real side effects before accepting:
+   ```bash
+   grep -n "Trade\.\|sqlite\|paper_trades\.db\|open.*['\"]w\|requests\." tests/test_NEW_FILE.py
+   ```
+   Any match without a mock or tmp fixture = real side effect = flag it.
+4. For code changes, do the 8-step code review from AGENTS.md.
+
+**The failure:** 2026-03-15 — James wrote a test that made real paper trade DB writes. "302 passing" looked clean. I reported done without reading the file. Ian caught it and fixed it himself.
+
 Running lessons and notes for the end_of_day_trader / obs subsystem work.
 
 ---

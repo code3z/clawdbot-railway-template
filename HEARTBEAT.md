@@ -8,13 +8,32 @@ Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
 ---
 
 ## Weather Trading (every heartbeat)
-1. Check `polymarket/forecast_logs/` for recent entries and errors
+1. Check `trading/forecast_logs/` for recent entries and errors (dated files: `trader-YYYY-MM-DD.log`)
 2. Check paper trades DB for any newly settled trades
-3. Check launchctl agents for errors: `launchctl list | grep trady`
+3. Check orchestrator: `ps aux | grep orchestrator | grep -v grep`
 4. If any trades resolved (status != pending), update Ian with P&L
-5. **NBM trader** (new 2026-02-27): check `forecast_logs/nbm_forecast_trader.stdout.log`
-   - Requires forecast_logger to have run first (NBM data in forecasts.jsonl)
-   - Model: truncated normal, σ=XND/1.28, P∈[10%,90%], edge≥8%, $3 max/trade
+
+### ⚠️ Obs date: always use ET date, never UTC
+When checking `push_extremes` or any obs table, use the **ET date**:
+```python
+from zoneinfo import ZoneInfo
+from datetime import datetime
+ET = ZoneInfo("America/New_York")
+date_str = datetime.now(ET).strftime("%Y-%m-%d")  # ✅ correct
+# NOT: datetime.utcnow().strftime(...)            # ❌ wrong — UTC date ≠ ET date before 5 AM UTC
+```
+At 1 AM UTC, ET date is still "yesterday". Checking UTC date will always return 0 rows before midnight ET.
+
+### ⚠️ Displacement prevention: NEVER open a new wethr SSE connection for monitoring
+The wethr push client holds one persistent SSE connection per API key.
+Opening a second connection (by running `wethr_push_client.py` or calling its `main()`) will
+**displace the running daemon** — it loses its connection and takes 5–30s to reconnect, dropping events.
+For heartbeat monitoring of obs data: **READ FROM DB ONLY**:
+```python
+import sqlite3
+db = sqlite3.connect("/data/workspace/trading/paper_trades/paper_trades.db")
+rows = db.execute("SELECT station, date_str, nws_high_f FROM push_extremes WHERE date_str=?", (date_str,)).fetchall()
+```
 
 ## Fill Monitor Health (every heartbeat)
 ```bash
@@ -53,13 +72,23 @@ If it's been a while since last Simmer check:
 At first heartbeat of the day (after 8 AM ET):
 1. Daemon health: `launchctl list | grep trady` — flag any non-zero exit codes
 2. Forecast log freshness: check mtime of `forecast_logs/forecasts.jsonl` — warn if >8h old
-3. Log error scan: grep last 50 lines of these logs for Traceback/Error/NameError:
-   - `forecast_logs/wethr_push_client.stdout.log` ← obs signals (confirmed, peak_passed, trough) run here
+3. Log error scan: grep **last 200 lines only** (not whole file) for Traceback/Error/NameError:
+   - `tail -200 forecast_logs/wethr_push_client.stdout.log | grep -i "error\|traceback"` ← old errors persist in file
+   - (do NOT grep the whole wethr log — it contains pre-fix errors from March 3 that are no longer relevant)
    - `forecast_logs/cli_push_trigger.stdout.log`
    - `forecast_logs/twc_morning_trader.stdout.log`
    - `forecast_logs/between_bucket_trader.stdout.log`
    - NOTE: `nws_obs_trader.stdout.log` is STALE — daemon unloaded, do NOT check
 4. DB summary: 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
+5. ALL_MODELS audit (weekly): models in DB with non-rejected trades that are NOT in ALL_MODELS → they'll never settle
+   ```bash
+   cd polymarket && .venv/bin/python -c "
+   import sqlite3; from paper_trading.db import ALL_MODELS
+   db = sqlite3.connect('paper_trades/paper_trades.db'); in_all = set(ALL_MODELS)
+   missing = [r[0] for r in db.execute(\"SELECT DISTINCT model FROM trades WHERE fill_status NOT IN ('rejected','cancelled','voided') AND model IS NOT NULL\").fetchall() if r[0] not in in_all]
+   print('Missing from ALL_MODELS:', missing or 'none ✅')
+   "
+   ```
 5. Ash report: check `polymarket/reports/` for any `code_review_*.md` with open (🔲) findings not yet brought to Ian — bring these up in morning chat even if Ian doesn't ask
 
 ## Between Bucket Trader (check every heartbeat)
