@@ -2,7 +2,7 @@
 
 All paths relative to `/data/workspace/trading/`. Logs: `forecast_logs/{script}-YYYY-MM-DD.log`.
 
-> ⚠️ **Heartbeats run in an isolated session.** Ian cannot see replies here. If something needs attention, send it to the trading channel: `<#1482107559333859610>`. Do not reply into the heartbeat session expecting Ian to see it.
+> ⚠️ **Heartbeats run in an isolated session.** Ian cannot see replies here. If everything is healthy, reply `HEARTBEAT_OK` — no message needed. Only send to the trading channel (`<#1482107559333859610>`) if something actually needs attention.
 
 ---
 
