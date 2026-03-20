@@ -1,6 +1,31 @@
 # MEMORY.md — Long-Term Memory
 
-Keep this tight. Details belong in project docs, not here.
+## 📐 What Goes Where (read before adding anything)
+
+| Content type | File |
+|---|---|
+| Operational context, Ian profile, open TODOs, runbooks with no better home | **MEMORY.md** (here) |
+| Lessons from experience, technical rules, API behavior, bug post-mortems | **LEARNINGS.md** (in the right category section) |
+| Hard rule checklist items | **RULES.md** |
+| Current system architecture, active traders, schedules | **README.md** |
+| James workflow, spec requirements, review process | **JAMES_SOP.md** |
+| Raw session notes | **memory/YYYY-MM-DD.md** |
+
+**Before adding to MEMORY.md, ask:** "Does this belong in LEARNINGS, RULES, JAMES_SOP, or README instead?" If yes — write it there.
+
+**Pruning signal:** when this file starts to feel long, review each section: *"Would a future session actually need this, or is it already covered somewhere else?"* Delete what's redundant.
+
+---
+
+---
+
+## 🚫 If I Say I'll Do Something, Do It — No Deferred TODOs (2026-03-20)
+
+When identifying a fix or improvement during a task, do it in that same response. Do not flag it as a "TODO for next session" or "worth doing before X."
+
+Ian called this out explicitly after I noted adding a PID guard as a TODO — and then he had to ask me to do it.
+
+**The rule:** If I say "X needs to be done" — do X. If I genuinely can't do it now (blocked, needs Ian input, out of scope), say *why* explicitly. Otherwise: just do it.
 
 ---
 
@@ -216,3 +241,37 @@ Wethr server holds connection slot ~20 min after client dies. If you restart the
 
 **Rule:** Kill once → let launchctl bring it back → do not touch it again for 20 min.
 **409 retry** is now 30s (was 300s). Self-heals automatically.
+
+---
+
+## 🛑 Ask Before Acting — Approval Required for Significant Actions (2026-03-20)
+
+**Never perform a significant or irreversible action unless Ian has explicitly approved it.**
+"Significant" = anything that deletes, overwrites, sends externally, restarts a service, or modifies prod config.
+
+Examples requiring explicit approval:
+- Deleting files or directories (even "obvious" cache/temp files)
+- Restarting daemons or services
+- Sending messages or external API writes
+- Modifying DB records directly
+
+"Implicitly allowed" only when Ian says something like "go ahead", "do it", "clean those up", "restart it", etc.
+Default: show the plan, wait for approval.
+
+**Never promise to change behavior without writing it to MEMORY.md first. A promise made in chat dies with the session.**
+
+---
+
+## 📝 Failed Edits — Always Report (2026-03-20)
+
+When the `edit` tool fails:
+- If I recover via another method: say **"edit failed first attempt but I fixed it"**
+- If I cannot recover: say **"edit failed and I couldn't fix it — [reason]"**
+
+Never silently swallow a failed edit and move on without telling Ian.
+
+### Correct edit process:
+1. **Read the file first** — find the exact insertion point, check for duplicates
+2. **Use `edit`** with precise surrounding context
+3. **Fall back to append only** if `edit` fails AND the content genuinely belongs at the end of the file
+Never use `cat >>` as a lazy shortcut — it bypasses duplicate checking and placement control.
