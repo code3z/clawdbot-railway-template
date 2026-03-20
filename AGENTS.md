@@ -45,6 +45,7 @@ Before doing anything else, read ALL of the following files in order. For each f
 |------|-------------|
 | `memory/YYYY-MM-DD.md` | Only if Ian asks to continue from a prior session |
 | `trading/SKILLS.md` | Starting a new strategy, need the full playbook for a market type |
+| `trading/POLYMARKET_LEARNINGS.md` | Exploring Polymarket, temporal arb, early strategy history |
 | `trading/JAMES_SOP.md` | Before spawning James or reviewing his work |
 | `trading/DATA_SOURCES.md` | Working on obs/training data, backtest mocking |
 | `trading/RESET_TRADER.md` | Resetting a paper trader's state |

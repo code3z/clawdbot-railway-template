@@ -1,7 +1,7 @@
 # TOOLS.md - Environment & Setup Notes
 
 ## agent-browser — Browser Automation CLI
-- **Binary**: `/opt/homebrew/bin/agent-browser` (in PATH)
+- **Binary**: `/data/npm/bin/agent-browser` (in PATH)
 - **Use this instead of the `browser` tool** for any web task — no Chrome extension relay needed, call directly via `exec`
 - Browser daemon persists across chained calls (use `&&` to chain)
 - **Key commands**:
@@ -18,8 +18,8 @@
 - **For logged-in sites**: use `--session-name` to save/restore cookies (Kalshi, etc.)
 
 ## qmd — Semantic Search
-- **Binary**: `/Users/ian/.bun/bin/qmd` (in PATH)
-- **Collections**: `workspace` (`~/.openclaw/workspace/**/*.md`), `polymarket` (`polymarket/**/*.md`)
+- **Binary**: not available on Railway (macOS-only tool)
+- **Collections**: `workspace` (`/data/workspace/**/*.md`), `polymarket` (`/data/workspace/trading/**/*.md`)
 - **Use instead of grep** for conceptual/decision searches
 - `qmd query "..."` — hybrid semantic + reranking (~8s, best results)
 - `qmd search "..."` — BM25 keyword only (instant, good for exact strings)
@@ -27,16 +27,16 @@
 - See AGENTS.md for full usage guide
 
 ## Machine
-- Host: Ian's MacBook Pro (arm64, macOS 15.1)
-- Shell: zsh
-- Python: 3.12 (at `/Library/Frameworks/Python.framework/Versions/3.12/`)
-- Node: v23.3.0
+- Host: Railway VPS (Linux, x64)
+- Shell: bash
+- Python: 3.11.2 (system), 3.11 in trading venv
+- Node: v22.22.1
 
 ## Python: Always Use the venv
-- **Venv**: `/Users/ian/.openclaw/workspace/polymarket/.venv` (Python 3.13.0)
-- **Always run**: `.venv/bin/python script.py` or `.venv/bin/python -m pytest tests/`
-- System `python3` is 3.12.8 — different version, different packages. Don't use it.
-- Daemons (launchctl) already use `.venv/bin/python` ✅
+- **Venv**: `/data/workspace/trading/.venv` (Python 3.11)
+- **Always run**: `/data/workspace/trading/.venv/bin/python script.py` or `.venv/bin/python -m pytest tests/`
+- System `python3` is 3.11.2 — same version but different packages. Use the venv.
+- All daemons in `orchestrator.py` use the venv python ✅
 
 ## Python Packages (installed)
 ```
@@ -315,14 +315,18 @@ Common params (hourly): `station=KMIA&data=tmpf&year1=...&month1=...&day1=1&year
 | YouTube Transcript | (python library) | Video transcripts |
 
 ## Workspace
-- Project root: `/Users/ian/.openclaw/workspace/`
-- Polymarket project: `/Users/ian/.openclaw/workspace/polymarket/`
-- Paper trade data: `/Users/ian/.openclaw/workspace/polymarket/paper_trades/`
-- Memory: `/Users/ian/.openclaw/workspace/memory/`
+- Project root: `/data/workspace/`
+- Trading project: `/data/workspace/trading/`
+- Paper trade data: `/data/workspace/trading/paper_trades/`
+- Memory: `/data/workspace/memory/`
+- Logs: `/data/workspace/trading/forecast_logs/{script}-YYYY-MM-DD.log`
 
 ## Running Processes
-Check PIDs in `polymarket/paper_trades/pid.txt` for paper_trader.py.
-Other processes (systematic_no.py, weather_oracle.py) — check with `ps aux | grep python`.
+All processes managed by `orchestrator.py`. Check with:
+```bash
+ps aux | grep python | grep -v grep
+```
+See HEARTBEAT.md for full daemon health checks.
 
 ## Polymarket Log Map — Where Orders Are Actually Logged
 
