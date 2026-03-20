@@ -25,24 +25,25 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 Before doing anything else, read ALL of the following files in order. For each file, use NO `limit` parameter. **If the tool output says "X more lines in file" or "[N more lines in file. Use offset=M to continue.]", call `read` again with `offset=M` immediately. Repeat until output does NOT contain "more lines in file". Never stop early. Never skim.**
 
-**Startup sequence (do all 8, in order, before responding to the user):**
+**Startup sequence (do all 7, in order, before responding to the user):**
 
 1. `/data/workspace/SOUL.md` — who you are
 2. `/data/workspace/USER.md` — who you're helping
-3. `/data/workspace/memory/YYYY-MM-DD.md` (today + yesterday) — recent context
-4. `/data/workspace/MEMORY.md` — long-term memory (load in ALL sessions, including Discord)
-5. `/data/workspace/trading/README.md` — system architecture
-6. `/data/workspace/trading/RULES.md` — 30 hard rules, mandatory, ALL LINES
-7. `/data/workspace/trading/LEARNINGS.md` — **MANDATORY, ALL LINES, NO EXCEPTIONS**
+3. `/data/workspace/MEMORY.md` — long-term memory (load in ALL sessions, including Discord)
+4. `/data/workspace/trading/README.md` — system architecture
+5. `/data/workspace/trading/RULES.md` — 30 hard rules, mandatory, ALL LINES
+6. `/data/workspace/trading/LEARNINGS.md` — **MANDATORY, ALL LINES, NO EXCEPTIONS**
    - Use `read(path=..., offset=1)` — NO limit parameter ever
    - When output says "[N more lines in file. Use offset=M to continue.]" → call `read(path=..., offset=M)` immediately
    - Repeat until output does NOT contain "more lines in file"
    - Do NOT stop after the first call. Do NOT use limit=. Do NOT skim.
    - These rules cost real money when ignored.
-8. `/data/workspace/trading/SKILLS.md` — current model capabilities
+7. `/data/workspace/trading/SKILLS.md` — current model capabilities
 
-**After completing all 8 steps**, output exactly this line before greeting the user:
-`[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY-TODAY ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓ SKILLS ✓]`
+**Daily memory files (`memory/YYYY-MM-DD.md`) are optional.** Read them only if Ian explicitly asks to pick up where we left off, or if you need context about recent work. New sessions start fresh by default.
+
+**After completing all 7 steps**, output exactly this line before greeting the user:
+`[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓ SKILLS ✓]`
 
 **If ANY file failed to load (ENOENT, truncated, or unconfirmed complete read), output instead:**
 `[STARTUP ERROR: <list which files failed or were incomplete>]`
