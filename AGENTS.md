@@ -342,6 +342,20 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 **Never state system state (orders placed, daemon running, logs clean) without first checking
 the correct source.** If unsure which log file to check, run `qmd query "<daemon name> log"` first.
 
+## Keep README Current
+
+`trading/README.md` is mandatory startup reading. It must always reflect reality.
+
+**Update it whenever:**
+- A new trader is added → add to the schedule table + models table
+- A trader is archived → move model key to the Archived row; remove from schedule table
+- A trader's schedule or mode (live/paper) changes → update the schedule table
+- A new daemon is added → add to Always-On Daemons table
+
+This applies to you AND James. When James ships a new trader, the spec must include "update README.md." When you merge James's work, verify README was updated before committing.
+
+---
+
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
