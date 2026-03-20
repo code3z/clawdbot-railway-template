@@ -39,12 +39,6 @@ fi
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [bootstrap] Starting orchestrator (with crash-restart loop)..." >> "$LOG"
 
 cd "$TRADING_DIR"
-(
-  while true; do
-    "$VENV" orchestrator.py >> "$LOG" 2>&1
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [bootstrap] orchestrator exited (code $?), restarting in 5s..." >> "$LOG"
-    sleep 5
-  done
-) &
+setsid nohup bash run_orchestrator.sh >> "$LOG" 2>&1 &
 
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [bootstrap] Orchestrator loop started (pid $!)" >> "$LOG"
