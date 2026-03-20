@@ -38,18 +38,26 @@ Before doing anything else, read ALL of the following files in order. For each f
    - Repeat until output does NOT contain "more lines in file"
    - Do NOT stop after the first call. Do NOT use limit=. Do NOT skim.
    - These rules cost real money when ignored.
-7. `/data/workspace/trading/SKILLS.md` — current model capabilities
 
-**Daily memory files (`memory/YYYY-MM-DD.md`) are optional.** Read them only if Ian explicitly asks to pick up where we left off, or if you need context about recent work. New sessions start fresh by default.
+**Daily memory files and skill files are optional — load on demand:**
 
-**After completing all 7 steps**, output exactly this line before greeting the user:
-`[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓ SKILLS ✓]`
+| File | When to read |
+|------|-------------|
+| `memory/YYYY-MM-DD.md` | Only if Ian asks to continue from a prior session |
+| `trading/SKILLS.md` | Starting a new strategy, need the full playbook for a market type |
+| `trading/JAMES_SOP.md` | Before spawning James or reviewing his work |
+| `trading/DATA_SOURCES.md` | Working on obs/training data, backtest mocking |
+| `trading/RESET_TRADER.md` | Resetting a paper trader's state |
+| `trading/ARCHIVE_TRADER.md` | Retiring/archiving a trader |
 
-**If ANY file failed to load (ENOENT, truncated, or unconfirmed complete read), output instead:**
+**After completing all 6 steps**, output exactly this line before greeting the user:
+`[STARTUP COMPLETE: SOUL ✓ USER ✓ MEMORY ✓ README ✓ RULES ✓ LEARNINGS ✓]`
+
+**If ANY mandatory file failed to load (ENOENT, truncated, or unconfirmed complete read), output instead:**
 `[STARTUP ERROR: <list which files failed or were incomplete>]`
 **and stop — do not proceed until the user acknowledges.**
 
-If you skip any file or read LEARNINGS.md partially, you are violating a hard rule. There is no excuse.
+If you skip any mandatory file or read LEARNINGS.md partially, you are violating a hard rule. There is no excuse.
 
 Don't ask permission. Just do it.
 
