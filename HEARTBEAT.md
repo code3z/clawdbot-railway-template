@@ -44,14 +44,20 @@ Check errors: `grep -i "API FAILURE\|ERROR" forecast_logs/fill_monitor-$(date +%
 ### 3. Recent Trades
 Check paper trades DB for newly settled trades. If any resolved (status != pending), update Ian with P&L.
 
-### 4. ⚠️ Obs date: always use ET date, never UTC
+### 4. ⚠️ Obs date: always use ET date, never UTC — and check YESTERDAY before noon ET
 ```python
 from zoneinfo import ZoneInfo
-from datetime import datetime
+from datetime import datetime, timedelta
 ET = ZoneInfo("America/New_York")
-date_str = datetime.now(ET).strftime("%Y-%m-%d")  # ✅ correct
+now_et = datetime.now(ET)
+# Before noon ET, observations for "today" may not have populated yet.
+# Check yesterday's date so you don't get a false 0.
+if now_et.hour < 12:
+    date_str = (now_et - timedelta(days=1)).strftime("%Y-%m-%d")  # yesterday ✅
+else:
+    date_str = now_et.strftime("%Y-%m-%d")                         # today ✅
 ```
-At 1 AM UTC, ET date is still "yesterday". UTC date will return 0 rows before midnight ET.
+At 1 AM UTC (= ~8 PM ET previous day), checking today's ET date will return 0 rows. Check yesterday.
 
 ### 5. ⚠️ Never open a second wethr SSE connection
 The wethr push client holds one persistent SSE connection. A second connection displaces the running daemon (drops events for 5–30s). Monitor obs data by **reading from DB only**:

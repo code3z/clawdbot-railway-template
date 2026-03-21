@@ -262,6 +262,10 @@ Default: show the plan, wait for approval.
 
 ---
 
+## 📝 Failed Edits — Retry Once Before Workarounds (2026-03-21)
+
+When the `edit` tool fails: **retry it once** with fresh surrounding context before reaching for alternative approaches (Python script replacements, cat >>, etc.). One retry catches most whitespace/encoding mismatches. Only escalate if the second attempt also fails.
+
 ## 📝 Failed Edits — Always Report (2026-03-20)
 
 When the `edit` tool fails:

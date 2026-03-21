@@ -209,3 +209,203 @@ Each 15-min window has its own reference price. "Will BTC be higher in 15 min?" 
 - [ ] Cross-venue (Polymarket/Kalshi) dead zone frequency — needed before scaling 15-min arb
 - [ ] Is realized BTC vol materially different across 15-min vs hourly vs daily horizons? (vol of vol effect)
 - [ ] What's the bid/ask spread on hourly and weekly markets vs 15-min — is there enough liquidity to extract edge?
+
+---
+
+---
+
+## Full Backtest Analysis — March 20, 2026 (30-day dataset)
+
+### Dataset
+- **3,000 settled KXBTC15M windows** (Feb 16 – Mar 20, 2026) — ~32 days
+- **37,077 1-minute candle rows** with yes_ask, yes_bid, mid, volume, outcome
+- **BTC prices**: Binance BTCUSD 1-min klines (≈0.008% premium vs BRTI — negligible)
+- CF Benchmarks BRTI API requires paid license — unusable. Binance is adequate proxy.
+- Scripts: `notes/btc15m_backtest.py` → `notes/btc15m_history.csv`
+
+### Key Methodology Note: Market Mid Is the Right Signal
+Using BTC-vs-reference% as a signal requires a BTC price source that matches BRTI (the actual settlement index). Instead: the **Kalshi market mid price at window open IS the aggregated BRTI signal** — traders set it by watching BRTI live. No external BTC source needed for the signal.
+
+---
+
+### Finding 1 (RETRACTED): Below-Reference Bias
+
+Original 500-window analysis (5-day data) showed +37% ROI when BTC was 0.1-0.5% below reference. After expanding to 3,000 windows (30 days), this collapsed to only +5.9% net ROI. The 5-day sample was one calm BTC regime; the 30-day dataset includes the drop from $96k to $68k where mean reversion fails.
+
+**Status: Retracted. Not reliable enough to trade.**
+
+---
+
+### Finding 2 (CURRENT): Market Mid Calibration Edge
+
+The market is well-calibrated across most of the price curve. Two bands show systematic mispricing (first-candle-only analysis, N=2,952 unique windows):
+
+| Band | N windows | Win rate | Market mid | Edge | Net ROI | Z | p | Bonferroni |
+|---|---|---|---|---|---|---|---|---|
+| YES mid 0.45–0.50 | 515 | 51.8% | 47.5% | +4.3% | +3.8% | 1.98 | 0.048 | ❌ fails |
+| **YES mid 0.60–0.65** | **295** | **70.2%** | **62.1%** | **+8.1%** | **+8.9%** | **3.02** | **0.0025** | ✅ barely |
+
+**Frequency**: 10% of windows qualify for the 0.60–0.65 band → ~9-10/day
+
+**Mechanism**: When a window opens with BTC slightly above the reference (market ~60-65¢), retail traders sell YES expecting a pullback. But BTC above the reference tends to stay there more than the market prices. The *market's* 62% is consistently wrong — actual win rate is 70%.
+
+---
+
+### Finding 3 (KEY): Edge Is Only at Window Open
+
+The 0.60–0.65 edge exists ONLY in the first 3 minutes. After that, the market reprices:
+
+| Time in window | N | Win rate | Net ROI | Z | p |
+|---|---|---|---|---|---|
+| **Open (0–3 min)** | **540** | **68.3%** | **+5.9%** | **3.07** | **0.002** ✅ |
+| Early (3–7 min) | 773 | 65.5% | +1.0% | 1.80 | 0.072 |
+| Mid (7–11 min) | 406 | 62.1% | -4.3% | -0.10 | 0.92 — no edge |
+| Late (11–15 min) | 181 | 67.4% | +3.8% | 1.39 | 0.16 |
+
+**Execution requirement**: Must enter within first 3 minutes of each window or the edge is gone.
+
+---
+
+### Finding 4 (CRITICAL): Prior Window = NO Amplifies Edge Massively
+
+Splitting the 0.60–0.65 band by whether the prior window resolved YES or NO:
+
+| Prior window | N | Win rate | Net ROI | Z | p |
+|---|---|---|---|---|---|
+| **Prior = NO** | **169** | **74.0%** | **+14.9%** | **3.51** | **0.0005** ✅✅ |
+| Prior = YES | 126 | 65.1% | +0.9% | 0.69 | 0.49 — no edge |
+| All (baseline) | 295 | 70.2% | +8.9% | 3.02 | 0.0025 |
+
+**The entire edge lives in the "Prior = NO" case.** When the prior window resolved YES (BTC stayed above its reference), the current 60–65¢ mid has essentially no edge. When the prior window resolved NO (BTC fell below its reference), the current window opening at 60–65¢ has +14.9% net ROI.
+
+**Mechanism (likely)**: Prior window NO means BTC dipped below the prior reference. Current window opens with BTC having recovered above the new reference (mid 60-65¢). This recovery/bounce pattern — a dip followed by a move back above — tends to have continuation. The market doesn't fully price in this continuation.
+
+This is somewhat counter to pure momentum (prior YES is NOT better), but it's a bounce/recovery play: after a failed window, the correction tends to overshoot.
+
+---
+
+### Finding 5: US Afternoon (14–20 ET) Drives Most Edge
+
+Splitting the 0.60–0.65 band by time of day:
+
+| Session (ET) | N | Win rate | Net ROI | Z | p |
+|---|---|---|---|---|---|
+| Overnight 00–09 | 116 | 68.1% | +5.8% | 1.39 | 0.17 |
+| Morning 09–14 | 64 | 64.1% | -0.8% | 0.31 | 0.76 — no edge |
+| **Afternoon 14–20** | **79** | **78.5%** | **+22.0%** | **3.53** | **0.0004** ✅✅ |
+| Evening 20–24 | 36 | 69.4% | +7.8% | 0.97 | 0.33 |
+
+**US afternoon (2–8pm ET) is the sweet spot.** The morning session has no edge at all. The afternoon edge is enormous — 78.5% win rate at +22% net ROI.
+
+---
+
+### Trading Signal Summary (As Of March 20)
+
+**Entry conditions (all must be met):**
+1. Window just opened (remaining ≥ 13 min — enter in first 3 min)
+2. Market YES mid = 0.60–0.65
+3. Prior window resolved NO
+4. Time: 14:00–20:00 ET (optional but boosts edge significantly)
+
+**Expected edge:**
+- All qualifying (prior=NO): N=169, WR=74%, Net ROI **+14.9%**, z=3.51, p=0.0005
+- US afternoon + prior=NO: N~50-60 (estimated), Net ROI likely **>20%**
+
+**Frequency estimate:**
+- 0.60–0.65 band: 10% of windows × 96/day = ~9-10/day
+- Prior=NO condition: ~57% of those (169/295) → ~5-6/day
+- US afternoon only (14-20 ET, 24 of 96 windows = 25%): ~1-2/day in the highest-conviction band
+
+**Capital efficiency:**
+- $100 deployed → +14.9% → +$14.90 per trade
+- 5 trades/day at that rate → +$74.50/day → ~74.5%/day not realistic (not all windows qualify simultaneously)
+- Realistic: 2-5 qualifying windows/day at +8-15% each → 1-3% daily returns → ~365-1095% annualized
+
+---
+
+### Caveats & Known Risks
+
+1. **Bonferroni**: 0.60-0.65 base band barely survives (p=0.0025 at threshold). Further splits (prior=NO) reduce N to 169 — now post-hoc on 2 dimensions. True confidence is lower than z=3.51 implies.
+2. **30-day sample**: One BTC regime (major downtrend $96k→$68k). Edge may differ in bull or sideways regimes.
+3. **Execution gap**: 3-minute entry window. Need automated entry. Manual trading will miss fills.
+4. **Entry price**: Analysis uses candle close price. Real fills at ask (+0.5¢ average) reduce ROI slightly.
+5. **Fill rate at limit**: If we bid below ask to improve price, fill rate drops. Need to measure vs buy-at-ask tradeoff.
+
+---
+
+### Open Questions
+- [ ] Does the prior=NO + afternoon edge hold in different BTC regimes (bull, sideways)?
+- [ ] Is the afternoon edge (14-20 ET) due to US liquidity, or institutional BTC activity patterns?
+- [ ] What's the mechanism for prior=NO amplifying the edge? (bounce/recovery vs something structural)
+- [ ] What exit strategy: hold to window close (binary) or exit early if price moves favorably?
+- [ ] Can we run this automatically with limit orders? What's the execution architecture?
+- [ ] Does the edge compound? If we enter window N+1 after a NO in window N, does window N+2 after another NO have further edge?
+
+---
+
+## Live Data Analysis — March 20, 2026 (Early / Superseded)
+
+### Data Collected
+- 500 settled KXBTC15M windows (March 15–20, 2026)
+- 6,262 1-minute candle rows with BTC spot prices joined
+- Tools: `notes/btc15m_backtest.py`, `notes/btc15m_history.csv`
+
+### Finding 1: Slightly-Below-Reference Bias (HIGH CONFIDENCE)
+
+**Signal:** BTC is 0.1%–0.5% below the reference price at window open (12–15m remaining)
+
+| Metric | Value |
+|---|---|
+| N (windows) | 71 unique |
+| Market avg YES price | 40.3¢ |
+| Actual YES win rate | 56.1% |
+| Edge | **+15.8%** |
+| EV per contract | **+$0.152** |
+| ROI per trade | **+37%** |
+| Z-score / p-value | 3.40 / 0.0007 ✅ |
+| Frequency | ~14% of windows (~14/day) |
+
+**Mechanism:** When BTC dips slightly below the reference at window open, retail oversells YES (recency/loss-aversion bias). A 0.1–0.5% move is tiny — BTC recovers more than half the time in 15 minutes. Market prices YES at 40¢ when fair value is ~56¢.
+
+**Trade:** Buy YES at ~41¢ (or bid 50¢ and collect whatever fills). Expected +37% ROI per qualifying trade.
+
+**Calibration check passes:** ATM (±0.1%) shows -0.003 edge — market is efficient there. Bias is specific to the slightly-below zone.
+
+**Deep below (-0.5% to -1.5%):** Market correctly prices YES low (6–7¢), actual win rate 0%. No edge there.
+
+### Open Questions
+- [ ] Is the +15.8% edge stable across days, or driven by a few windows?
+- [ ] Symmetric check: does BTC slightly ABOVE reference create BUY NO edge?
+- [ ] Variance premium on daily OTM markets — still untested
+- [ ] Bid at 50¢ vs buy at ask — which gets better fills in practice?
+- [ ] What's the max size the market can absorb without moving the price?
+
+### Hypothesis Checks (same 500-window dataset)
+
+**H1 — Symmetry (BTC above reference):**
+- BTC +0.1% to +0.5% above ref: WR=0.617, mid=0.604, edge=+0.013 → **no edge**
+- BUY NO there: ROI=-4.9% → negative
+- Bias is **one-directional only** (downside dip = retail panic-sells YES)
+
+**H2 — Momentum:**
+- Prior window YES → edge=+0.197 | Prior window NO → edge=+0.099
+- Prior 2 YES → edge=+0.219 | Prior 2 NO → edge=+0.091
+- Small N (10–36), treat as directional signal only, not reliable standalone
+
+**H3 — Time of Day (in signal zone):**
+
+| Session (ET) | N | WR | Edge | EV/contract |
+|---|---|---|---|---|
+| 00-09 overnight | 29 | 41.4% | +0.048 | +$0.043 |
+| 09-12 US open | 20 | 60.0% | +0.235 | +$0.230 |
+| 12-16 midday | 28 | 57.1% | +0.124 | +$0.119 |
+| 16-20 after close | 11 | 72.7% | +0.242 | +$0.235 |
+| 20-24 evening | 26 | 61.5% | +0.222 | +$0.215 |
+
+**Overnight edge essentially disappears. Trade US hours only (09:00–24:00 ET).**
+
+### ⚠️ Outstanding Validation Questions
+- [ ] Are fills actually achievable at yes_ask with $20 position size?
+- [ ] Is the edge stable day-by-day or driven by a few windows?
+- [ ] Does the 1-min candle price accurately represent what we'd actually pay?
+- [ ] Any look-ahead bias in the data join (BTC price timing)?

@@ -1,0 +1,519 @@
+Fetching 9100 settled KXBTC15M events...
+Got 9100 events. Date range: KXBTC15M-25DEC111200 → KXBTC15M-26MAR210615
+Fetching market results...
+  0/9100
+  50/9100
+  100/9100
+  150/9100
+  200/9100
+  250/9100
+  300/9100
+  350/9100
+  400/9100
+  450/9100
+  500/9100
+  550/9100
+  600/9100
+  650/9100
+  700/9100
+  750/9100
+  800/9100
+  850/9100
+  900/9100
+  950/9100
+  1000/9100
+  1050/9100
+  1100/9100
+  1150/9100
+  1200/9100
+  1250/9100
+  1300/9100
+  1350/9100
+  1400/9100
+  1450/9100
+  1500/9100
+  1550/9100
+  1600/9100
+  1650/9100
+  1700/9100
+  1750/9100
+  1800/9100
+  1850/9100
+  1900/9100
+  1950/9100
+  2000/9100
+  2050/9100
+  2100/9100
+  2150/9100
+  2200/9100
+  2250/9100
+  2300/9100
+  2350/9100
+  2400/9100
+  2450/9100
+  2500/9100
+  2550/9100
+  2600/9100
+  2650/9100
+  2700/9100
+  2750/9100
+  2800/9100
+  2850/9100
+  2900/9100
+  2950/9100
+  3000/9100
+  3050/9100
+  3100/9100
+  3150/9100
+  3200/9100
+  3250/9100
+  3300/9100
+  3350/9100
+  3400/9100
+  3450/9100
+  3500/9100
+  3550/9100
+  3600/9100
+  3650/9100
+  3700/9100
+  3750/9100
+  3800/9100
+  3850/9100
+  3900/9100
+  3950/9100
+  4000/9100
+  4050/9100
+  4100/9100
+  4150/9100
+  4200/9100
+  4250/9100
+  4300/9100
+  4350/9100
+  4400/9100
+  4450/9100
+  4500/9100
+  4550/9100
+  4600/9100
+  4650/9100
+  4700/9100
+  4750/9100
+  4800/9100
+  4850/9100
+  4900/9100
+  4950/9100
+  5000/9100
+  5050/9100
+  5100/9100
+  5150/9100
+  5200/9100
+  5250/9100
+  5300/9100
+  5350/9100
+  5400/9100
+  5450/9100
+  5500/9100
+  5550/9100
+  5600/9100
+  5650/9100
+  5700/9100
+  5750/9100
+  5800/9100
+  5850/9100
+  5900/9100
+  5950/9100
+  6000/9100
+  6050/9100
+  6100/9100
+  6150/9100
+  6200/9100
+  6250/9100
+  6300/9100
+  6350/9100
+  6400/9100
+  6450/9100
+  6500/9100
+  6550/9100
+  6600/9100
+  6650/9100
+  6700/9100
+  6750/9100
+  6800/9100
+  6850/9100
+  6900/9100
+  6950/9100
+  7000/9100
+  7050/9100
+  7100/9100
+  7150/9100
+  7200/9100
+  7250/9100
+  7300/9100
+  7350/9100
+  7400/9100
+  7450/9100
+  7500/9100
+  7550/9100
+  7600/9100
+  7650/9100
+  7700/9100
+  7750/9100
+  7800/9100
+  7850/9100
+  7900/9100
+  7950/9100
+  8000/9100
+  8050/9100
+  8100/9100
+  8150/9100
+  8200/9100
+  8250/9100
+  8300/9100
+  8350/9100
+  8400/9100
+  8450/9100
+  8500/9100
+  8550/9100
+  8600/9100
+  8650/9100
+  8700/9100
+  8750/9100
+  8800/9100
+  8850/9100
+  8900/9100
+  8950/9100
+  9000/9100
+  9050/9100
+Got meta for 9100 events
+
+Fetching BTC 1-min prices (2025-12-11 → 2026-03-21)...
+  Cached through 2025-12-12 09:25, 1000 minutes
+  Cached through 2025-12-13 02:05, 2000 minutes
+  Cached through 2025-12-13 18:45, 3000 minutes
+  Cached through 2025-12-14 11:25, 4000 minutes
+  Cached through 2025-12-15 04:05, 5000 minutes
+  Cached through 2025-12-15 20:45, 6000 minutes
+  Cached through 2025-12-16 13:25, 7000 minutes
+  Cached through 2025-12-17 06:05, 8000 minutes
+  Cached through 2025-12-17 22:45, 9000 minutes
+  Cached through 2025-12-18 15:25, 10000 minutes
+  Cached through 2025-12-19 08:05, 11000 minutes
+  Cached through 2025-12-20 00:45, 12000 minutes
+  Cached through 2025-12-20 17:25, 13000 minutes
+  Cached through 2025-12-21 10:05, 14000 minutes
+  Cached through 2025-12-22 02:45, 15000 minutes
+  Cached through 2025-12-22 19:25, 16000 minutes
+  Cached through 2025-12-23 12:05, 17000 minutes
+  Cached through 2025-12-24 04:45, 18000 minutes
+  Cached through 2025-12-24 21:25, 19000 minutes
+  Cached through 2025-12-25 14:05, 20000 minutes
+  Cached through 2025-12-26 06:45, 21000 minutes
+  Cached through 2025-12-26 23:25, 22000 minutes
+  Cached through 2025-12-27 16:05, 23000 minutes
+  Cached through 2025-12-28 08:45, 24000 minutes
+  Cached through 2025-12-29 01:25, 25000 minutes
+  Cached through 2025-12-29 18:05, 26000 minutes
+  Cached through 2025-12-30 10:45, 27000 minutes
+  Cached through 2025-12-31 03:25, 28000 minutes
+  Cached through 2025-12-31 20:05, 29000 minutes
+  Cached through 2026-01-01 12:45, 30000 minutes
+  Cached through 2026-01-02 05:25, 31000 minutes
+  Cached through 2026-01-02 22:05, 32000 minutes
+  Cached through 2026-01-03 14:45, 33000 minutes
+  Cached through 2026-01-04 07:25, 34000 minutes
+  Cached through 2026-01-05 00:05, 35000 minutes
+  Cached through 2026-01-05 16:45, 36000 minutes
+  Cached through 2026-01-06 09:25, 37000 minutes
+  Cached through 2026-01-07 02:05, 38000 minutes
+  Cached through 2026-01-07 18:45, 39000 minutes
+  Cached through 2026-01-08 11:25, 40000 minutes
+  Cached through 2026-01-09 04:05, 41000 minutes
+  Cached through 2026-01-09 20:45, 42000 minutes
+  Cached through 2026-01-10 13:25, 43000 minutes
+  Cached through 2026-01-11 06:05, 44000 minutes
+  Cached through 2026-01-11 22:45, 45000 minutes
+  Cached through 2026-01-12 15:25, 46000 minutes
+  Cached through 2026-01-13 08:05, 47000 minutes
+  Cached through 2026-01-14 00:45, 48000 minutes
+  Cached through 2026-01-14 17:25, 49000 minutes
+  Cached through 2026-01-15 10:05, 50000 minutes
+  Cached through 2026-01-16 02:45, 51000 minutes
+  Cached through 2026-01-16 19:25, 52000 minutes
+  Cached through 2026-01-17 12:05, 53000 minutes
+  Cached through 2026-01-18 04:45, 54000 minutes
+  Cached through 2026-01-18 21:25, 55000 minutes
+  Cached through 2026-01-19 14:05, 56000 minutes
+  Cached through 2026-01-20 06:45, 57000 minutes
+  Cached through 2026-01-20 23:25, 58000 minutes
+  Cached through 2026-01-21 16:05, 59000 minutes
+  Cached through 2026-01-22 08:45, 60000 minutes
+  Cached through 2026-01-23 01:25, 61000 minutes
+  Cached through 2026-01-23 18:05, 62000 minutes
+  Cached through 2026-01-24 10:45, 63000 minutes
+  Cached through 2026-01-25 03:25, 64000 minutes
+  Cached through 2026-01-25 20:05, 65000 minutes
+  Cached through 2026-01-26 12:45, 66000 minutes
+  Cached through 2026-01-27 05:25, 67000 minutes
+  Cached through 2026-01-27 22:05, 68000 minutes
+  Cached through 2026-01-28 14:45, 69000 minutes
+  Cached through 2026-01-29 07:25, 70000 minutes
+  Cached through 2026-01-30 00:05, 71000 minutes
+  Cached through 2026-01-30 16:45, 72000 minutes
+  Cached through 2026-01-31 09:25, 73000 minutes
+  Cached through 2026-02-01 02:05, 74000 minutes
+  Cached through 2026-02-01 18:45, 75000 minutes
+  Cached through 2026-02-02 11:25, 76000 minutes
+  Cached through 2026-02-03 04:05, 77000 minutes
+  Cached through 2026-02-03 20:45, 78000 minutes
+  Cached through 2026-02-04 13:25, 79000 minutes
+  Cached through 2026-02-05 06:05, 80000 minutes
+  Cached through 2026-02-05 22:45, 81000 minutes
+  Cached through 2026-02-06 15:25, 82000 minutes
+  Cached through 2026-02-07 08:05, 83000 minutes
+  Cached through 2026-02-08 00:45, 84000 minutes
+  Cached through 2026-02-08 17:25, 85000 minutes
+  Cached through 2026-02-09 10:05, 86000 minutes
+  Cached through 2026-02-10 02:45, 87000 minutes
+  Cached through 2026-02-10 19:25, 88000 minutes
+  Cached through 2026-02-11 12:05, 89000 minutes
+  Cached through 2026-02-12 04:45, 90000 minutes
+  Cached through 2026-02-12 21:25, 91000 minutes
+  Cached through 2026-02-13 14:05, 92000 minutes
+  Cached through 2026-02-14 06:45, 93000 minutes
+  Cached through 2026-02-14 23:25, 94000 minutes
+  Cached through 2026-02-15 16:05, 95000 minutes
+  Cached through 2026-02-16 08:45, 96000 minutes
+  Cached through 2026-02-17 01:25, 97000 minutes
+  Cached through 2026-02-17 18:05, 98000 minutes
+  Cached through 2026-02-18 10:45, 99000 minutes
+  Cached through 2026-02-19 03:25, 100000 minutes
+  Cached through 2026-02-19 20:05, 101000 minutes
+  Cached through 2026-02-20 12:45, 102000 minutes
+  Cached through 2026-02-21 05:25, 103000 minutes
+  Cached through 2026-02-21 22:05, 104000 minutes
+  Cached through 2026-02-22 14:45, 105000 minutes
+  Cached through 2026-02-23 07:25, 106000 minutes
+  Cached through 2026-02-24 00:05, 107000 minutes
+  Cached through 2026-02-24 16:45, 108000 minutes
+  Cached through 2026-02-25 09:25, 109000 minutes
+  Cached through 2026-02-26 02:05, 110000 minutes
+  Cached through 2026-02-26 18:45, 111000 minutes
+  Cached through 2026-02-27 11:25, 112000 minutes
+  Cached through 2026-02-28 04:05, 113000 minutes
+  Cached through 2026-02-28 20:45, 114000 minutes
+  Cached through 2026-03-01 13:25, 115000 minutes
+  Cached through 2026-03-02 06:05, 116000 minutes
+  Cached through 2026-03-02 22:45, 117000 minutes
+  Cached through 2026-03-03 15:25, 118000 minutes
+  Cached through 2026-03-04 08:05, 119000 minutes
+  Cached through 2026-03-05 00:45, 120000 minutes
+  Cached through 2026-03-05 17:25, 121000 minutes
+  Cached through 2026-03-06 10:05, 122000 minutes
+  Cached through 2026-03-07 02:45, 123000 minutes
+  Cached through 2026-03-07 19:25, 124000 minutes
+  Cached through 2026-03-08 12:05, 125000 minutes
+  Cached through 2026-03-09 04:45, 126000 minutes
+  Cached through 2026-03-09 21:25, 127000 minutes
+  Cached through 2026-03-10 14:05, 128000 minutes
+  Cached through 2026-03-11 06:45, 129000 minutes
+  Cached through 2026-03-11 23:25, 130000 minutes
+  Cached through 2026-03-12 16:05, 131000 minutes
+  Cached through 2026-03-13 08:45, 132000 minutes
+  Cached through 2026-03-14 01:25, 133000 minutes
+  Cached through 2026-03-14 18:05, 134000 minutes
+  Cached through 2026-03-15 10:45, 135000 minutes
+  Cached through 2026-03-16 03:25, 136000 minutes
+  Cached through 2026-03-16 20:05, 137000 minutes
+  Cached through 2026-03-17 12:45, 138000 minutes
+  Cached through 2026-03-18 05:25, 139000 minutes
+  Cached through 2026-03-18 22:05, 140000 minutes
+  Cached through 2026-03-19 14:45, 141000 minutes
+  Cached through 2026-03-20 07:25, 142000 minutes
+  Cached through 2026-03-21 00:05, 143000 minutes
+  Cached through 2026-03-21 10:48, 143643 minutes
+BTC cache: 143643 minutes
+
+Fetching candlesticks for 9100 events...
+  0/9100 | rows so far: 14
+  50/9100 | rows so far: 660
+  100/9100 | rows so far: 1315
+  150/9100 | rows so far: 1945
+  200/9100 | rows so far: 2595
+  250/9100 | rows so far: 3226
+  300/9100 | rows so far: 3882
+  350/9100 | rows so far: 4499
+  400/9100 | rows so far: 5133
+  450/9100 | rows so far: 5727
+  500/9100 | rows so far: 6339
+  550/9100 | rows so far: 6925
+  600/9100 | rows so far: 7559
+  650/9100 | rows so far: 8193
+  700/9100 | rows so far: 8817
+  750/9100 | rows so far: 9430
+  800/9100 | rows so far: 10049
+  850/9100 | rows so far: 10662
+  900/9100 | rows so far: 11276
+  950/9100 | rows so far: 11891
+  1000/9100 | rows so far: 12521
+  1050/9100 | rows so far: 13134
+  1100/9100 | rows so far: 13739
+  1150/9100 | rows so far: 14356
+  1200/9100 | rows so far: 14950
+  1250/9100 | rows so far: 15574
+  1300/9100 | rows so far: 16215
+  1350/9100 | rows so far: 16849
+  1400/9100 | rows so far: 17482
+  1450/9100 | rows so far: 18114
+  1500/9100 | rows so far: 18744
+  1550/9100 | rows so far: 19381
+  1600/9100 | rows so far: 20018
+  1650/9100 | rows so far: 20635
+  1700/9100 | rows so far: 21263
+  1750/9100 | rows so far: 21920
+  1800/9100 | rows so far: 22551
+  1850/9100 | rows so far: 23169
+  1900/9100 | rows so far: 23808
+  1950/9100 | rows so far: 24436
+  2000/9100 | rows so far: 25073
+  2050/9100 | rows so far: 25721
+  2100/9100 | rows so far: 26355
+  2150/9100 | rows so far: 26969
+  2200/9100 | rows so far: 27603
+  2250/9100 | rows so far: 28217
+  2300/9100 | rows so far: 28832
+  2350/9100 | rows so far: 29466
+  2400/9100 | rows so far: 30098
+  2450/9100 | rows so far: 30731
+  2500/9100 | rows so far: 31336
+  2550/9100 | rows so far: 31975
+  2600/9100 | rows so far: 32618
+  2650/9100 | rows so far: 33250
+  2700/9100 | rows so far: 33901
+  2750/9100 | rows so far: 34524
+  2800/9100 | rows so far: 35167
+  2850/9100 | rows so far: 35702
+  2900/9100 | rows so far: 36350
+  2950/9100 | rows so far: 36981
+  3000/9100 | rows so far: 37613
+  3050/9100 | rows so far: 38254
+  3100/9100 | rows so far: 38904
+  3150/9100 | rows so far: 39535
+  3200/9100 | rows so far: 40178
+  3250/9100 | rows so far: 40828
+  3300/9100 | rows so far: 41477
+  3350/9100 | rows so far: 42131
+  3400/9100 | rows so far: 42788
+  3450/9100 | rows so far: 43425
+  3500/9100 | rows so far: 44048
+  3550/9100 | rows so far: 44577
+  3600/9100 | rows so far: 45191
+  3650/9100 | rows so far: 45843
+  3700/9100 | rows so far: 46488
+  3750/9100 | rows so far: 47110
+  3800/9100 | rows so far: 47738
+  3850/9100 | rows so far: 48362
+  3900/9100 | rows so far: 49000
+  3950/9100 | rows so far: 49654
+  4000/9100 | rows so far: 50293
+  4050/9100 | rows so far: 50930
+  4100/9100 | rows so far: 51586
+  4150/9100 | rows so far: 52225
+  4200/9100 | rows so far: 52749
+  4250/9100 | rows so far: 53368
+  4300/9100 | rows so far: 54009
+  4350/9100 | rows so far: 54626
+  4400/9100 | rows so far: 55254
+  4450/9100 | rows so far: 55882
+  4500/9100 | rows so far: 56522
+  4550/9100 | rows so far: 57140
+  4600/9100 | rows so far: 57744
+  4650/9100 | rows so far: 58382
+  4700/9100 | rows so far: 59015
+  4750/9100 | rows so far: 59625
+  4800/9100 | rows so far: 60235
+  4850/9100 | rows so far: 60847
+  4900/9100 | rows so far: 61416
+  4950/9100 | rows so far: 62032
+  5000/9100 | rows so far: 62652
+  5050/9100 | rows so far: 63277
+  5100/9100 | rows so far: 63887
+  5150/9100 | rows so far: 64531
+  5200/9100 | rows so far: 65155
+  5250/9100 | rows so far: 65785
+  5300/9100 | rows so far: 66427
+  5350/9100 | rows so far: 67102
+  5400/9100 | rows so far: 67735
+  5450/9100 | rows so far: 68379
+  5500/9100 | rows so far: 69007
+  5550/9100 | rows so far: 69560
+  5600/9100 | rows so far: 70190
+  5650/9100 | rows so far: 70829
+  5700/9100 | rows so far: 71462
+  5750/9100 | rows so far: 72108
+  5800/9100 | rows so far: 72756
+  5850/9100 | rows so far: 73421
+  5900/9100 | rows so far: 74059
+  5950/9100 | rows so far: 74726
+  6000/9100 | rows so far: 75396
+  6050/9100 | rows so far: 76041
+  6100/9100 | rows so far: 76689
+  6150/9100 | rows so far: 77326
+  6200/9100 | rows so far: 77852
+  6250/9100 | rows so far: 78485
+  6300/9100 | rows so far: 79088
+  6350/9100 | rows so far: 79709
+  6400/9100 | rows so far: 80351
+  6450/9100 | rows so far: 80963
+  6500/9100 | rows so far: 81586
+  6550/9100 | rows so far: 82203
+  6600/9100 | rows so far: 82869
+  6650/9100 | rows so far: 83498
+  6700/9100 | rows so far: 84156
+  6750/9100 | rows so far: 84792
+  6800/9100 | rows so far: 85393
+  6850/9100 | rows so far: 86017
+  6900/9100 | rows so far: 86503
+  6950/9100 | rows so far: 87116
+  7000/9100 | rows so far: 87755
+  7050/9100 | rows so far: 88373
+  7100/9100 | rows so far: 89033
+  7150/9100 | rows so far: 89691
+  7200/9100 | rows so far: 90333
+  7250/9100 | rows so far: 90996
+  7300/9100 | rows so far: 91616
+  7350/9100 | rows so far: 92260
+  7400/9100 | rows so far: 92909
+  7450/9100 | rows so far: 93570
+  7500/9100 | rows so far: 94192
+  7550/9100 | rows so far: 94762
+  7600/9100 | rows so far: 95410
+  7650/9100 | rows so far: 96057
+  7700/9100 | rows so far: 96667
+  7750/9100 | rows so far: 97312
+  7800/9100 | rows so far: 97972
+  7850/9100 | rows so far: 98652
+  7900/9100 | rows so far: 99300
+  7950/9100 | rows so far: 99863
+  8000/9100 | rows so far: 100481
+  8050/9100 | rows so far: 100997
+  8100/9100 | rows so far: 101660
+  8150/9100 | rows so far: 102295
+  8200/9100 | rows so far: 102942
+  8250/9100 | rows so far: 103547
+  8300/9100 | rows so far: 104173
+  8350/9100 | rows so far: 104817
+  8400/9100 | rows so far: 105456
+  8450/9100 | rows so far: 106102
+  8500/9100 | rows so far: 106745
+  8550/9100 | rows so far: 107369
+  8600/9100 | rows so far: 107991
+  8650/9100 | rows so far: 108606
+  8700/9100 | rows so far: 109075
+  8750/9100 | rows so far: 109502
+  8800/9100 | rows so far: 110088
+  8850/9100 | rows so far: 110621
+  8900/9100 | rows so far: 111048
+  8950/9100 | rows so far: 111484
+  9000/9100 | rows so far: 111992
+  9050/9100 | rows so far: 112512
+
+Done. 113016 rows → /data/workspace/notes/btc15m_history.csv

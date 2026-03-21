@@ -1,0 +1,363 @@
+BTC 15-min sampler — capturing 8 windows
+Output: /data/workspace/notes/btc15m_samples.jsonl
+
+[16:26:08] Next window at 16:30:00 UTC — waiting 233s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+
+=================================================================
+Window 1/8 | KXBTC15M-26MAR201245-45
+  Reference: $70,015.25 | BTC at open: $70,035.48 (+20.23)
+  t+    6s rem= 894s | mid=0.395 | $70,035.48 (+20.23) | vol=0
+  t+   38s rem= 862s | mid=0.455 | $70,035.48 (+20.23) | vol=6940
+  t+   70s rem= 830s | mid=0.355 | $70,035.48 (+20.23) | vol=11246
+  t+  102s rem= 798s | mid=0.205 | $70,035.48 (+20.23) | vol=24796
+  t+  134s rem= 766s | mid=0.125 | $69,807.31 (-207.94) | vol=35505
+  t+  165s rem= 735s | mid=0.155 | $69,807.31 (-207.94) | vol=46027
+  t+  197s rem= 703s | mid=0.165 | $69,805.45 (-209.80) | vol=51578
+  t+  229s rem= 671s | mid=0.245 | $69,805.45 (-209.80) | vol=56616
+  t+  261s rem= 639s | mid=0.245 | $69,894.92 (-120.33) | vol=63593
+  t+  292s rem= 608s | mid=0.180 | $69,894.92 (-120.33) | vol=68126
+  t+  324s rem= 576s | mid=0.205 | $69,894.92 (-120.33) | vol=73449
+  t+  356s rem= 544s | mid=0.125 | $69,894.92 (-120.33) | vol=77619
+  t+  388s rem= 512s | mid=0.054 | $69,894.92 (-120.33) | vol=81804
+  t+  420s rem= 480s | mid=0.042 | $69,766.84 (-248.41) | vol=85967
+  t+  451s rem= 449s | mid=0.035 | $69,766.84 (-248.41) | vol=103717
+  t+  483s rem= 417s | mid=0.021 | $69,766.84 (-248.41) | vol=116003
+  t+  515s rem= 385s | mid=0.009 | $69,766.84 (-248.41) | vol=127728
+  t+  547s rem= 353s | mid=0.011 | $69,766.84 (-248.41) | vol=138757
+  t+  578s rem= 322s | mid=0.007 | $69,766.84 (-248.41) | vol=144685
+  t+  610s rem= 290s | mid=0.015 | $69,766.84 (-248.41) | vol=156552
+  t+  642s rem= 258s | mid=0.015 | $69,766.84 (-248.41) | vol=162479
+  t+  674s rem= 226s | mid=0.011 | $69,766.84 (-248.41) | vol=165505
+  t+  705s rem= 195s | mid=0.014 | $69,766.84 (-248.41) | vol=169806
+  t+  737s rem= 163s | mid=0.005 | $69,766.84 (-248.41) | vol=170692
+  t+  769s rem= 131s | mid=0.005 | $69,766.84 (-248.41) | vol=173647
+  t+  801s rem=  99s | mid=0.003 | $69,766.84 (-248.41) | vol=175245
+  t+  832s rem=  68s | no price | $69,766.84 (-248.41) | vol=177252
+  t+  864s rem=  36s | no price | $69,766.84 (-248.41) | vol=179353
+  272 samples captured. Waiting for result...
+  Result: NO | ref=$70,015.25 btc_open=70,035.48
+[16:45:17] Next window at 17:00:00 UTC — waiting 884s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+  [t+8s] waiting for fresh market...
+
+=================================================================
+Window 2/8 | KXBTC15M-26MAR201315-15
+  Reference: $69,833.61 | BTC at open: $69,700.00 (-133.61)
+  t+   11s rem= 889s | mid=0.475 | $69,700.00 (-133.61) | vol=0
+  t+   42s rem= 858s | mid=0.545 | $69,700.00 (-133.61) | vol=6968
+  t+   74s rem= 826s | mid=0.555 | $69,700.00 (-133.61) | vol=13142
+  t+  106s rem= 794s | mid=0.640 | $69,700.00 (-133.61) | vol=17648
+  t+  137s rem= 763s | mid=0.595 | $69,700.00 (-133.61) | vol=24186
+  t+  169s rem= 731s | mid=0.675 | $69,700.00 (-133.61) | vol=28959
+  t+  201s rem= 699s | mid=0.625 | $69,700.00 (-133.61) | vol=35192
+  t+  233s rem= 667s | mid=0.635 | $69,700.00 (-133.61) | vol=40859
+  t+  264s rem= 636s | mid=0.765 | $69,700.00 (-133.61) | vol=44487
+  t+  296s rem= 604s | mid=0.800 | $69,700.00 (-133.61) | vol=50820
+  t+  328s rem= 572s | mid=0.685 | $69,954.14 (+120.53) | vol=58745
+  t+  359s rem= 541s | mid=0.225 | $69,876.54 (+42.93) | vol=84491
+  t+  391s rem= 509s | mid=0.555 | $69,876.54 (+42.93) | vol=95756
+  t+  423s rem= 477s | mid=0.460 | $69,876.54 (+42.93) | vol=102510
+  t+  455s rem= 445s | mid=0.505 | $69,876.54 (+42.93) | vol=105858
+  t+  487s rem= 413s | mid=0.595 | $69,876.54 (+42.93) | vol=109571
+  t+  519s rem= 381s | mid=0.565 | $69,876.54 (+42.93) | vol=112979
+  t+  551s rem= 349s | mid=0.675 | $69,876.54 (+42.93) | vol=121296
+  t+  583s rem= 317s | mid=0.620 | $69,876.54 (+42.93) | vol=128335
+  t+  614s rem= 286s | mid=0.695 | $69,876.54 (+42.93) | vol=137133
+  t+  646s rem= 254s | mid=0.625 | $69,876.54 (+42.93) | vol=141571
+  t+  678s rem= 222s | mid=0.365 | $69,787.28 (-46.33) | vol=150090
+  t+  710s rem= 190s | mid=0.430 | $69,787.28 (-46.33) | vol=155389
+  t+  742s rem= 158s | mid=0.295 | $69,787.28 (-46.33) | vol=162881
+  t+  773s rem= 127s | mid=0.240 | $69,787.28 (-46.33) | vol=173919
+  t+  805s rem=  95s | mid=0.250 | $69,787.28 (-46.33) | vol=186355
+  t+  837s rem=  63s | mid=0.100 | $69,787.28 (-46.33) | vol=199928
+  t+  869s rem=  31s | no price | $69,787.28 (-46.33) | vol=221904
+  271 samples captured. Waiting for result...
+  Result: NO | ref=$69,833.61 btc_open=69,700.00
+[17:15:13] Next window at 17:30:00 UTC — waiting 888s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+  [t+8s] waiting for fresh market...
+  [t+10s] waiting for fresh market...
+
+=================================================================
+Window 3/8 | KXBTC15M-26MAR201345-45
+  Reference: $69,639.50 | BTC at open: $69,642.02 (+2.52)
+  t+   13s rem= 887s | mid=0.495 | $69,642.02 (+2.52) | vol=721
+  t+   45s rem= 855s | mid=0.610 | $69,642.02 (+2.52) | vol=9946
+  t+   76s rem= 824s | mid=0.515 | $69,642.02 (+2.52) | vol=15460
+  t+  108s rem= 792s | mid=0.425 | $69,642.02 (+2.52) | vol=21112
+  t+  140s rem= 760s | mid=0.380 | $69,642.02 (+2.52) | vol=28196
+  t+  172s rem= 728s | mid=0.350 | $69,538.61 (-100.89) | vol=32721
+  t+  204s rem= 696s | mid=0.390 | $69,538.61 (-100.89) | vol=35783
+  t+  235s rem= 665s | mid=0.335 | $69,538.61 (-100.89) | vol=39545
+  t+  267s rem= 633s | mid=0.255 | $69,538.61 (-100.89) | vol=44330
+  t+  299s rem= 601s | mid=0.245 | $69,538.61 (-100.89) | vol=48339
+  t+  330s rem= 570s | mid=0.410 | $69,538.61 (-100.89) | vol=52226
+  t+  362s rem= 538s | mid=0.185 | $69,538.61 (-100.89) | vol=58149
+  t+  394s rem= 506s | mid=0.155 | $69,538.61 (-100.89) | vol=64100
+  t+  426s rem= 474s | mid=0.084 | $69,473.50 (-166.00) | vol=68917
+  t+  458s rem= 442s | mid=0.092 | $69,451.99 (-187.51) | vol=78163
+  t+  489s rem= 411s | mid=0.130 | $69,451.99 (-187.51) | vol=85026
+  t+  521s rem= 379s | mid=0.140 | $69,451.99 (-187.51) | vol=92624
+  t+  553s rem= 347s | mid=0.175 | $69,538.61 (-100.89) | vol=94705
+  t+  585s rem= 315s | mid=0.385 | $69,588.99 (-50.51) | vol=114696
+  t+  617s rem= 283s | mid=0.210 | $69,588.99 (-50.51) | vol=119344
+  t+  649s rem= 251s | mid=0.505 | $69,588.99 (-50.51) | vol=128573
+  t+  681s rem= 219s | mid=0.295 | $69,588.99 (-50.51) | vol=136499
+  t+  712s rem= 188s | mid=0.185 | $69,588.99 (-50.51) | vol=147351
+  t+  744s rem= 156s | mid=0.090 | $69,588.99 (-50.51) | vol=158355
+  t+  777s rem= 123s | mid=0.295 | $69,588.99 (-50.51) | vol=166444
+  t+  808s rem=  92s | mid=0.022 | $69,588.99 (-50.51) | vol=179906
+  t+  840s rem=  60s | mid=0.003 | $69,588.99 (-50.51) | vol=224035
+  270 samples captured. Waiting for result...
+  Result: NO | ref=$69,639.50 btc_open=69,642.02
+[17:45:14] Next window at 18:00:00 UTC — waiting 887s
+Traceback (most recent call last):
+  File "/data/workspace/notes/btc15m_sampler.py", line 214, in <module>
+    main()
+  File "/data/workspace/notes/btc15m_sampler.py", line 160, in main
+    dist_open = (btc_at_open - floor) if btc_at_open else None
+                 ~~~~~~~~~~~~^~~~~~~
+TypeError: unsupported operand type(s) for -: 'float' and 'NoneType'
+BTC 15-min sampler — capturing 8 windows
+Output: /data/workspace/notes/btc15m_samples.jsonl
+
+[18:44:59] Next window at 18:45:00 UTC — waiting 2s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+
+=================================================================
+Window 1/8 | KXBTC15M-26MAR201500-00
+Traceback (most recent call last):
+  File "/data/workspace/notes/btc15m_sampler.py", line 214, in <module>
+    main()
+  File "/data/workspace/notes/btc15m_sampler.py", line 164, in main
+    print(f"  Reference: ${floor:,.2f} | BTC at open: ${btc_at_open:,.2f} ({dist_open:+.2f})" if btc_at_open else "")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unsupported format string passed to NoneType.__format__
+BTC 15-min sampler — capturing 8 windows
+Output: /data/workspace/notes/btc15m_samples.jsonl
+
+[18:45:14] Next window at 19:00:00 UTC — waiting 887s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+  [t+8s] waiting for fresh market...
+  [t+10s] waiting for fresh market...
+
+=================================================================
+Window 1/8 | KXBTC15M-26MAR201515-15
+  Reference: $69,751.10 | BTC at open: $69,716.19 (-34.91)
+  t+   13s rem= 887s | mid=0.675 | $69,716.19 (-34.91) | vol=588
+  t+   44s rem= 856s | mid=0.655 | $69,716.19 (-34.91) | vol=5462
+  t+   76s rem= 824s | mid=0.735 | $69,716.19 (-34.91) | vol=12136
+  t+  108s rem= 792s | mid=0.695 | $69,716.19 (-34.91) | vol=18963
+  t+  140s rem= 760s | mid=0.745 | $69,716.19 (-34.91) | vol=22798
+  t+  172s rem= 728s | mid=0.715 | $69,716.19 (-34.91) | vol=25818
+  t+  203s rem= 697s | mid=0.700 | $69,716.19 (-34.91) | vol=29039
+  t+  235s rem= 665s | mid=0.735 | $69,716.19 (-34.91) | vol=31430
+  t+  267s rem= 633s | mid=0.795 | $69,716.19 (-34.91) | vol=37906
+  t+  299s rem= 601s | mid=0.755 | $69,716.19 (-34.91) | vol=39891
+  t+  330s rem= 570s | mid=0.770 | $69,716.19 (-34.91) | vol=44055
+  t+  362s rem= 538s | mid=0.645 | $69,716.19 (-34.91) | vol=49262
+  t+  394s rem= 506s | mid=0.495 | $69,716.19 (-34.91) | vol=60022
+  t+  426s rem= 474s | mid=0.425 | $69,716.19 (-34.91) | vol=72667
+  t+  457s rem= 443s | mid=0.535 | $69,716.19 (-34.91) | vol=80344
+  t+  489s rem= 411s | mid=0.405 | $69,716.19 (-34.91) | vol=88674
+  t+  521s rem= 379s | mid=0.675 | $69,716.19 (-34.91) | vol=95377
+  t+  553s rem= 347s | mid=0.645 | $69,716.19 (-34.91) | vol=99714
+  t+  585s rem= 315s | mid=0.665 | $69,716.19 (-34.91) | vol=104073
+  t+  617s rem= 283s | mid=0.695 | $69,716.19 (-34.91) | vol=109778
+  t+  648s rem= 252s | mid=0.715 | $69,716.19 (-34.91) | vol=113834
+  t+  680s rem= 220s | mid=0.235 | $69,716.19 (-34.91) | vol=127056
+  t+  712s rem= 188s | mid=0.195 | $69,711.01 (-40.09) | vol=135024
+  t+  744s rem= 156s | mid=0.285 | $69,711.01 (-40.09) | vol=147853
+  t+  776s rem= 124s | mid=0.545 | $69,711.01 (-40.09) | vol=158517
+  t+  807s rem=  93s | mid=0.904 | $69,711.01 (-40.09) | vol=182471
+  t+  839s rem=  61s | mid=0.992 | $69,711.01 (-40.09) | vol=241241
+  270 samples captured. Waiting for result...
+  Result: YES | ref=$69,751.10 btc_open=69,716.19
+[19:15:13] Next window at 19:30:00 UTC — waiting 888s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+
+=================================================================
+Window 2/8 | KXBTC15M-26MAR201545-45
+  Reference: $69,858.71 | BTC at open: $69,900.00 (+41.29)
+  t+    6s rem= 894s | mid=0.495 | $69,900.00 (+41.29) | vol=137
+  t+   38s rem= 862s | mid=0.605 | $69,900.00 (+41.29) | vol=4750
+  t+   70s rem= 830s | mid=0.725 | $69,900.00 (+41.29) | vol=14599
+  t+  102s rem= 798s | mid=0.590 | $69,900.00 (+41.29) | vol=21749
+  t+  134s rem= 766s | mid=0.515 | $69,900.00 (+41.29) | vol=29817
+  t+  165s rem= 735s | mid=0.445 | $69,900.00 (+41.29) | vol=39093
+  t+  197s rem= 703s | mid=0.470 | $69,900.00 (+41.29) | vol=43813
+  t+  229s rem= 671s | mid=0.485 | $69,900.00 (+41.29) | vol=48324
+  t+  261s rem= 639s | mid=0.370 | $69,900.00 (+41.29) | vol=57334
+  t+  292s rem= 608s | mid=0.285 | $69,900.00 (+41.29) | vol=64574
+  t+  324s rem= 576s | mid=0.355 | $69,900.00 (+41.29) | vol=70983
+  t+  356s rem= 544s | mid=0.175 | $69,900.00 (+41.29) | vol=77909
+  t+  387s rem= 513s | mid=0.145 | $69,900.00 (+41.29) | vol=85663
+  t+  419s rem= 481s | mid=0.145 | $69,900.00 (+41.29) | vol=89547
+  t+  451s rem= 449s | mid=0.100 | $69,711.00 (-147.71) | vol=94305
+  t+  482s rem= 418s | mid=0.096 | $69,711.00 (-147.71) | vol=102181
+  t+  514s rem= 386s | mid=0.105 | $69,711.00 (-147.71) | vol=108189
+  t+  546s rem= 354s | mid=0.145 | $69,711.00 (-147.71) | vol=115243
+  t+  577s rem= 323s | mid=0.125 | $69,711.00 (-147.71) | vol=118029
+  t+  609s rem= 291s | mid=0.205 | $69,711.00 (-147.71) | vol=120445
+  t+  641s rem= 259s | mid=0.295 | $69,711.00 (-147.71) | vol=123417
+  t+  672s rem= 228s | mid=0.625 | $69,711.00 (-147.71) | vol=136954
+  t+  704s rem= 196s | mid=0.385 | $69,711.00 (-147.71) | vol=156848
+  t+  736s rem= 164s | mid=0.375 | $69,711.00 (-147.71) | vol=171955
+  t+  768s rem= 132s | mid=0.145 | $69,711.00 (-147.71) | vol=185521
+  t+  799s rem= 101s | mid=0.645 | $69,711.00 (-147.71) | vol=200412
+  t+  831s rem=  69s | mid=0.815 | $69,900.00 (+41.29) | vol=226074
+  t+  863s rem=  37s | mid=0.998 | $69,900.00 (+41.29) | vol=285062
+  273 samples captured. Waiting for result...
+  Result: YES | ref=$69,858.71 btc_open=69,900.00
+[19:45:19] Next window at 20:00:00 UTC — waiting 882s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+
+=================================================================
+Window 3/8 | KXBTC15M-26MAR201615-15
+  Reference: $70,147.17 | BTC at open: $70,120.65 (-26.52)
+  t+    4s rem= 896s | mid=0.310 | $70,120.65 (-26.52) | vol=0
+  t+   36s rem= 864s | mid=0.395 | $70,120.65 (-26.52) | vol=7887
+  t+   68s rem= 832s | mid=0.495 | $70,120.65 (-26.52) | vol=21225
+  t+  100s rem= 800s | mid=0.415 | $70,120.65 (-26.52) | vol=30034
+  t+  132s rem= 768s | mid=0.375 | $70,120.25 (-26.92) | vol=37798
+  t+  164s rem= 736s | mid=0.375 | $70,120.25 (-26.92) | vol=40385
+  t+  195s rem= 705s | mid=0.455 | $70,120.25 (-26.92) | vol=43331
+  t+  227s rem= 673s | mid=0.585 | $70,120.25 (-26.92) | vol=49630
+  t+  259s rem= 641s | mid=0.460 | $70,120.25 (-26.92) | vol=56955
+  t+  291s rem= 609s | mid=0.410 | $70,120.25 (-26.92) | vol=60732
+  t+  323s rem= 577s | mid=0.405 | $70,120.25 (-26.92) | vol=64792
+  t+  354s rem= 546s | mid=0.365 | $70,120.25 (-26.92) | vol=69758
+  t+  386s rem= 514s | mid=0.595 | $70,152.99 (+5.82) | vol=74363
+  t+  418s rem= 482s | mid=0.605 | $70,152.99 (+5.82) | vol=84704
+  t+  450s rem= 450s | mid=0.500 | $70,152.99 (+5.82) | vol=90495
+  t+  482s rem= 418s | mid=0.550 | $70,152.99 (+5.82) | vol=96822
+  t+  513s rem= 387s | mid=0.665 | $70,152.99 (+5.82) | vol=99648
+  t+  545s rem= 355s | mid=0.620 | $70,152.99 (+5.82) | vol=103862
+  t+  577s rem= 323s | mid=0.640 | $70,182.23 (+35.06) | vol=109169
+  t+  609s rem= 291s | mid=0.635 | $70,182.23 (+35.06) | vol=113185
+  t+  641s rem= 259s | mid=0.805 | $70,182.23 (+35.06) | vol=122607
+  t+  672s rem= 228s | mid=0.915 | $70,209.34 (+62.17) | vol=133667
+  t+  704s rem= 196s | mid=0.855 | $70,209.34 (+62.17) | vol=143514
+  t+  736s rem= 164s | mid=0.895 | $70,209.34 (+62.17) | vol=155089
+  t+  767s rem= 133s | mid=0.949 | $70,209.34 (+62.17) | vol=167190
+  t+  802s rem=  98s | mid=0.988 | $70,209.34 (+62.17) | vol=195776
+  t+  834s rem=  66s | mid=0.985 | $70,209.34 (+62.17) | vol=231358
+  t+  866s rem=  34s | mid=0.996 | $70,209.34 (+62.17) | vol=242819
+  272 samples captured. Waiting for result...
+  Result: YES | ref=$70,147.17 btc_open=70,120.65
+[20:15:14] Next window at 20:30:00 UTC — waiting 887s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+
+=================================================================
+Window 4/8 | KXBTC15M-26MAR201645-45
+  Reference: $69,963.59 | BTC at open: $69,955.26 (-8.33)
+  t+    9s rem= 891s | mid=0.445 | $69,955.26 (-8.33) | vol=42
+  t+   40s rem= 860s | mid=0.440 | $69,955.26 (-8.33) | vol=7784
+  t+   72s rem= 828s | mid=0.355 | $69,955.25 (-8.34) | vol=12239
+  t+  104s rem= 796s | mid=0.355 | $69,955.25 (-8.34) | vol=16372
+  t+  135s rem= 765s | mid=0.225 | $69,955.25 (-8.34) | vol=21961
+  t+  167s rem= 733s | mid=0.165 | $69,955.25 (-8.34) | vol=30559
+  t+  199s rem= 701s | mid=0.175 | $69,955.25 (-8.34) | vol=33157
+  t+  231s rem= 669s | mid=0.125 | $69,955.25 (-8.34) | vol=38139
+  t+  263s rem= 637s | mid=0.115 | $69,807.81 (-155.78) | vol=44858
+  t+  294s rem= 606s | mid=0.105 | $69,807.81 (-155.78) | vol=48723
+  t+  326s rem= 574s | mid=0.054 | $69,807.81 (-155.78) | vol=54159
+  t+  358s rem= 542s | mid=0.041 | $69,805.25 (-158.34) | vol=60829
+  t+  390s rem= 510s | mid=0.038 | $69,805.25 (-158.34) | vol=66543
+  t+  422s rem= 478s | mid=0.029 | $69,805.25 (-158.34) | vol=73820
+  t+  453s rem= 447s | mid=0.091 | $69,805.24 (-158.35) | vol=85294
+  t+  485s rem= 415s | mid=0.094 | $69,805.24 (-158.35) | vol=89341
+  t+  517s rem= 383s | mid=0.195 | $69,805.24 (-158.35) | vol=97440
+  t+  548s rem= 352s | mid=0.120 | $69,805.24 (-158.35) | vol=103162
+  t+  580s rem= 320s | mid=0.105 | $69,805.24 (-158.35) | vol=106646
+  t+  612s rem= 288s | mid=0.065 | $69,805.24 (-158.35) | vol=112064
+  t+  644s rem= 256s | mid=0.043 | $69,805.24 (-158.35) | vol=121853
+  t+  675s rem= 225s | mid=0.063 | $69,805.24 (-158.35) | vol=126493
+  t+  707s rem= 193s | mid=0.200 | $69,805.24 (-158.35) | vol=138683
+  t+  739s rem= 161s | mid=0.062 | $69,805.24 (-158.35) | vol=145949
+  t+  771s rem= 129s | mid=0.049 | $69,805.24 (-158.35) | vol=148047
+  t+  802s rem=  98s | mid=0.028 | $69,805.24 (-158.35) | vol=161687
+  t+  834s rem=  66s | mid=0.145 | $69,805.24 (-158.35) | vol=180489
+  t+  866s rem=  34s | no price | $69,805.24 (-158.35) | vol=205320
+  272 samples captured. Waiting for result...
+  Result: NO | ref=$69,963.59 btc_open=69,955.26
+[20:45:09] Next window at 21:00:00 UTC — waiting 892s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+  [t+8s] waiting for fresh market...
+  [t+10s] waiting for fresh market...
+  [t+12s] waiting for fresh market...
+  [t+14s] waiting for fresh market...
+  [t+16s] waiting for fresh market...
+  [t+18s] waiting for fresh market...
+
+=================================================================
+Window 5/8 | KXBTC15M-26MAR201715-15
+  Reference: $70,039.22 | BTC at open: $70,039.88 (+0.66)
+  t+   21s rem= 879s | mid=0.555 | $70,039.88 (+0.66) | vol=1383
+  t+   53s rem= 847s | mid=0.655 | $70,039.88 (+0.66) | vol=3779
+  t+   85s rem= 815s | mid=0.515 | $70,044.61 (+5.39) | vol=10139
+  t+  116s rem= 784s | mid=0.480 | $70,044.61 (+5.39) | vol=17217
+  t+  148s rem= 752s | mid=0.350 | $69,982.17 (-57.05) | vol=24564
+  t+  180s rem= 720s | mid=0.335 | $69,982.17 (-57.05) | vol=30823
+  t+  212s rem= 688s | mid=0.475 | $69,982.17 (-57.05) | vol=38080
+  t+  244s rem= 656s | mid=0.455 | $69,982.17 (-57.05) | vol=42885
+  t+  276s rem= 624s | mid=0.515 | $69,982.17 (-57.05) | vol=48228
+  t+  308s rem= 592s | mid=0.475 | $70,035.86 (-3.36) | vol=50370
+  t+  340s rem= 560s | mid=0.355 | $70,035.86 (-3.36) | vol=55792
+  t+  372s rem= 528s | mid=0.375 | $70,035.86 (-3.36) | vol=60129
+  t+  403s rem= 497s | mid=0.450 | $70,035.86 (-3.36) | vol=62692
+  t+  435s rem= 465s | mid=0.375 | $70,035.86 (-3.36) | vol=69831
+  t+  467s rem= 433s | mid=0.295 | $70,035.86 (-3.36) | vol=73567
+  t+  499s rem= 401s | mid=0.285 | $69,980.25 (-58.97) | vol=78352
+  t+  531s rem= 369s | mid=0.300 | $69,980.25 (-58.97) | vol=84166
+  t+  564s rem= 336s | mid=0.385 | $69,980.25 (-58.97) | vol=93102
+  t+  596s rem= 304s | mid=0.380 | $69,980.25 (-58.97) | vol=97049
+  t+  628s rem= 272s | mid=0.290 | $69,980.25 (-58.97) | vol=103490
+  t+  660s rem= 240s | mid=0.057 | $69,980.25 (-58.97) | vol=116712
+  t+  691s rem= 209s | mid=0.055 | $69,980.00 (-59.22) | vol=142363
+  t+  723s rem= 177s | mid=0.058 | $69,980.00 (-59.22) | vol=150663
+  t+  755s rem= 145s | mid=0.105 | $69,980.00 (-59.22) | vol=159765
+  t+  787s rem= 113s | mid=0.105 | $69,980.00 (-59.22) | vol=165880
+  t+  819s rem=  81s | mid=0.735 | $69,980.00 (-59.22) | vol=241294
+  t+  851s rem=  49s | mid=0.996 | $69,980.00 (-59.22) | vol=308253
+  266 samples captured. Waiting for result...
+  Result: YES | ref=$70,039.22 btc_open=70,039.88
+[21:15:12] Next window at 21:30:00 UTC — waiting 889s
+  [t+0s] waiting for fresh market...
+  [t+2s] waiting for fresh market...
+  [t+4s] waiting for fresh market...
+  [t+6s] waiting for fresh market...
+  [t+8s] waiting for fresh market...
+
+=================================================================
+Window 6/8 | KXBTC15M-26MAR201745-45
+  Reference: $0.00 | BTC at open: $70,468.57 (+0.00)
+Traceback (most recent call last):
+  File "/data/workspace/notes/btc15m_sampler.py", line 214, in <module>
+    main()
+  File "/data/workspace/notes/btc15m_sampler.py", line 185, in main
+    "btc_vs_ref": round(btc - floor, 2) if btc else None,
+                        ~~~~^~~~~~~
+TypeError: unsupported operand type(s) for -: 'float' and 'NoneType'
