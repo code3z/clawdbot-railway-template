@@ -134,10 +134,4 @@ tail -20 $LOG/obs_peak_gate_trader-$TODAY.log
 
 ## TODOs
 
-### Recalibrate twc_bucket_low p-table ~2026-04-07
-City-specific p-values set 2026-03-14 on only 17 days of March data.
-Run calibration script after 3+ more weeks of D-1 evening data.
-Current values: miami=0.80, chicago=0.80, lax=0.65, nyc=0.50, denver=0.35, austin=0.35
-
-### Rerun α calibration ~2026-03-27
-Current α=0.8 is empirically derived. Recheck after more data.
+See `/data/workspace/TODOS.md`.
