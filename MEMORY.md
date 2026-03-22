@@ -243,8 +243,10 @@ Wethr server holds connection slot ~20 min after client dies. If you restart the
 Examples requiring explicit approval:
 - Deleting files or directories (even "obvious" cache/temp files)
 - Restarting daemons or services
-- Sending messages or external API writes
+- Sending messages or external API writes (NOT Kalshi read-only calls — see below)
 - Modifying DB records directly
+
+**Kalshi read-only API calls (GET):** No approval needed. Just self-limit background fetches to ≤3 req/s (`time.sleep(0.33)` between calls) to leave headroom for live traders. The 20 req/s limit is shared — don't starve live order placement.
 
 "Implicitly allowed" only when Ian says something like "go ahead", "do it", "clean those up", "restart it", etc.
 Default: show the plan, wait for approval.
