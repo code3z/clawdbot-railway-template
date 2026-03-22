@@ -142,6 +142,72 @@ If P(same) > 95% and EV is strong, size it like a high-confidence trade. It's no
 
 **Monotonicity:** For "before date X" cumulative markets, YES price must be non-decreasing as X increases. Violations are real but usually thin liquidity; check depth before trading.
 
+## Polymarket tournament markets — LP / thin-book strategy
+
+Multi-outcome tournament markets (tennis, sports) on Polymarket are P2P CLOB — **not an AMM**. Prices are set by limit orders from human traders and automated market making bots. The key structure:
+
+- `gamma-api.polymarket.com/events?slug=...` → `outcomePrices` = **stale** (last trade or mid cached at event creation). Do NOT use for current prices.
+- Live prices: `clob.polymarket.com/midpoint?token_id=...` → `mid` field. Always pull this.
+- Live spread: `clob.polymarket.com/spread?token_id=...` → `spread` field.
+- Orderbook: `clob.polymarket.com/book?token_id=...` → `bids` / `asks` arrays.
+- Token IDs: `clob.polymarket.com/markets/{conditionId}` → `tokens[].token_id` (one per outcome).
+
+**The LP edge in thin tournament markets:**
+
+In a multi-outcome tournament (20 players), most markets have near-zero bids but asks in the 30-40¢ range (bots posting exits at premium). If a player has a real win probability of 5-15% but the bid side is empty:
+- Post a limit buy at 3-8¢ — you become the best bid
+- Anyone wanting to exit their YES position must either sell to you or wait
+- If filled and the player advances, YES approaches $1
+
+```python
+# Get real live prices for all players in a tournament event
+import requests, json
+
+r = requests.get('https://gamma-api.polymarket.com/events', params={'slug': 'EVENT-SLUG'})
+markets = r.json()[0]['markets']
+
+for m in markets:
+    cid = m['conditionId']
+    name = m.get('groupItemTitle')
+    cm = requests.get(f'https://clob.polymarket.com/markets/{cid}').json()
+    yes_tid = next(t['token_id'] for t in cm['tokens'] if t['outcome'] == 'Yes')
+    
+    mid    = float(requests.get(f'https://clob.polymarket.com/midpoint?token_id={yes_tid}').json().get('mid', 0))
+    spread = float(requests.get(f'https://clob.polymarket.com/spread?token_id={yes_tid}').json().get('spread', 0))
+    ob     = requests.get(f'https://clob.polymarket.com/book?token_id={yes_tid}').json()
+    
+    best_bid = max((float(b['price']) for b in ob.get('bids', [])), default=0)
+    best_ask = min((float(a['price']) for a in ob.get('asks', [])), default=1)
+    vol = float(m.get('volume', 0))
+    print(f"{name}: mid={mid:.3f} bid={best_bid:.3f} ask={best_ask:.3f} vol=${vol:.0f}")
+```
+
+**Cross-reference with Kalshi** for the same event — Kalshi usually has better price discovery on sports/tournament markets (higher OI, more human traders). If Kalshi mid > Polymarket best ask, there's a buy on Poly. If Kalshi mid < Polymarket best bid, sell on Poly (exit your position).
+
+**Minimum order size:** 50 shares. **Min tick:** 1¢. **Maker fees:** 0 on most markets.
+
+**LP rewards:** Check `rewards.rates` in the CLOB market response. Currently `null` on most thin markets — no rewards being paid. Only active on high-liquidity markets.
+
+---
+
+## Common mistakes — verified from session experience
+
+**1. Trusting `gamma-api outcomePrices` as a live price.** It's stale — often cached from market creation or last trade. Always pull `/midpoint` from the CLOB API for live prices. Example failure: saw 40¢ for Pegula from Gamma API while real CLOB mid was 9¢.
+
+**2. Confusing Polymarket AMM (old FPMM) with current P2P CLOB.** Polymarket migrated to CLOB. Prices are set by limit orders, not a bonding curve. The large "liquidity" numbers in Gamma API come from automated market making bots, not a protocol AMM.
+
+**3. Buying eliminated players.** In in-progress tournaments, 1¢ prices often reflect players who have already lost. Check current tournament standings before assessing any basket play. Swiatek at 1¢ = already eliminated, not a bargain.
+
+**4. Reading top-of-book bid as representative.** The top bid can be 1 contract at 6¢ with the rest at 3¢. Pull full orderbook depth before sizing any trade.
+
+**5. Confusing exhaustive-bucket arb with long-horizon yield.** KXGREENLANDPRICE sum-of-bids = 91¢ → guaranteed 9¢ is only ~3% annualized over 3 years. Our bar is 300% annualized. Time-adjust before calling something an arb.
+
+**6. Not checking `product_metadata.important_info` expiry.** Special clauses in market notices sometimes have cutoff dates. Always check the date on any notice before flagging it as a current risk.
+
+**7. Reading `rules_primary` and stopping.** Settlement source (exact FRED series) only appears in `/series/{ticker}` under `settlement_sources`. Never assume you've found the full rules without fetching the series endpoint.
+
+---
+
 ## References
 
 - `references/patterns.md` — all patterns with worked examples
