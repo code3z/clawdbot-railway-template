@@ -215,7 +215,7 @@ This returns what OM's model said would happen on March 14 — matching exactly 
 - **Docs**: https://www.visualcrossing.com/resources/documentation/weather-api/timeline-weather-api/
 
 ## TWC (The Weather Channel) Direct API — ✅ LIVE
-- **Key**: `adb6c94f2ec944c4b6c94f2ec9d4c47b` (trial key, full access)
+- **Key**: `49a41382690b44eba41382690b24eba7` (trial key, full access)
 - **Required header**: `Accept-Encoding: gzip`
 - **Common params**: `geocode=lat,lon` | `units=e` (Fahrenheit) | `language=en-US` | `format=json` | `apiKey=KEY`
 - **Status**: ✅ Live as of 2026-02-23
@@ -328,22 +328,43 @@ ps aux | grep python | grep -v grep
 ```
 See HEARTBEAT.md for full daemon health checks.
 
+## Log File Locations (Railway Linux)
+
+All logs: `/data/workspace/trading/forecast_logs/`
+
+**Two naming conventions:**
+- **Orchestrator-run traders**: `{name}-YYYY-MM-DD.log` — date is when the log was first opened that day
+- **Always-on daemons** (wethr_push_client, fill_monitor, cli_push_trigger, orderbook_scanner): `{name}-YYYY-MM-DD.log` — date is the **start date** (stays the same file until daemon restarts)
+- **cli_push city files**: undated `cli_push_{city}_paper.log` / `cli_push_{city}_live.log` — always-appending
+
+**To find the current log for any trader:**
+```bash
+ls -t /data/workspace/trading/forecast_logs/{name}-*.log | head -1
+# e.g.:
+ls -t /data/workspace/trading/forecast_logs/sports_arb_trader-*.log | head -1
+ls -t /data/workspace/trading/forecast_logs/wethr_push_client-*.log | head -1
+```
+
+**Legacy undated files** (`.stdout.log`, `.log` without date): old Mac-era files, no longer written to. Ignore them.
+
 ## Polymarket Log Map — Where Orders Are Actually Logged
 
-**CLI push trigger** dispatches subprocesses. The trigger's own log (`cli_push_trigger.stdout.log`)
-only shows "Firing..." and "done (exit=N)". Actual order output is in per-city files:
+**CLI push trigger** dispatches subprocesses. The trigger's own log shows "Firing..." and "done (exit=N)". Actual order output is in per-city files:
 - Live orders: `forecast_logs/cli_push_{city}_live.log`
 - Paper orders: `forecast_logs/cli_push_{city}_paper.log`
 
 **Standard command to find all live orders placed today:**
 ```bash
-grep "🟢 LIVE ORDER" polymarket/forecast_logs/cli_push_*_live.log
+grep "🟢 LIVE ORDER" /data/workspace/trading/forecast_logs/cli_push_*_live.log
 ```
 
-**Other trader logs** (output goes directly to their own stdout log):
-- TWC morning trader: `forecast_logs/twc_morning_trader.stdout.log`
-- Ensemble trader: `forecast_logs/ensemble_trader.stdout.log`
-- NWS obs trader: runs in-process inside wethr push client — `forecast_logs/wethr_push_client.stdout.log`
+**Key trader log locations** (use `ls -t forecast_logs/{name}-*.log | head -1` to get current file):
+- TWC morning trader: `forecast_logs/twc_morning_trader-YYYY-MM-DD.log`
+- Ensemble trader: `forecast_logs/ensemble_twc_trader-YYYY-MM-DD.log`
+- NWS obs trader: runs in-process inside wethr push client — `forecast_logs/wethr_push_client-YYYY-MM-DD.log`
+- Sports arb: `forecast_logs/sports_arb_trader-YYYY-MM-DD.log`
+- Wethr push events: `forecast_logs/wethr_push.jsonl` (permanent JSONL record, not rotated)
+- CLI push trigger: `forecast_logs/cli_push_trigger-YYYY-MM-DD.log` (daemon start date in name)
 
 **⚠️ Rule:** Never state "no orders were placed today" without running the standard command above.
 Log location must be verified before making any claim about system state.
