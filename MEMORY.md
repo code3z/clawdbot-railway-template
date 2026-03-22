@@ -116,6 +116,16 @@ When a sub-agent needs follow-up work or a fix:
 
 ---
 
+## 🔴 Check Existing Data Before ANY Kalshi API Fetch (2026-03-22)
+
+Before fetching from Kalshi, always check existing caches first:
+- `forecast_logs/kalshi_noon_prices_cache.json` — 3,383 noon prices (Feb 27–Mar 21)
+- The build_forecast_model.py training pipeline produces 3,282 rows with noon_price + win/loss — use for calibration analysis
+
+**Kalshi rate limit = 20 req/s shared with live traders.** Bulk historical fetches starve live order placement. Never run one without announcing to Ian and confirming live trading won't be harmed.
+
+**The mistake:** Ian asked for a market-price calibration table. I had exactly the data in the training pipeline and sent James to fetch 60k markets instead. This disrupted live trading. Cost: real.
+
 ## 🔍 Use Your Full Toolbox — Don't Ask When You Can Look
 
 When you're missing context (forgotten promises, prior decisions, what happened overnight):
