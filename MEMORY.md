@@ -19,6 +19,16 @@
 
 ---
 
+## 🚨 Restart Affected Processes Immediately After Code Changes
+
+When code changes are committed that affect a running daemon, **kill the old process right after committing** so the orchestrator restarts it on the new code. Do not wait until end of session or until Ian asks.
+
+Same applies to operational steps like removing a cron job, updating a timeout, clearing stale state — do them in the same turn as the code change, not as a cleanup item at the end.
+
+Ian should never have to prompt for these. If I built it, I finish it.
+
+---
+
 ## 🚫 If I Say I'll Do Something, Do It — No Deferred TODOs (2026-03-20)
 
 When identifying a fix or improvement during a task, do it in that same response. Do not flag it as a "TODO for next session" or "worth doing before X."
@@ -142,6 +152,14 @@ When you're missing context (forgotten promises, prior decisions, what happened 
 - Timezone: EST
 - **Return target: minimum 300% annualized per trade** — this is the bar
 - **Ask him for things** — API keys, paid services, website access. Don't assume I can't have it.
+
+## TWC API Key (updated 2026-03-22)
+New key: `49a41382690b44eba41382690b24eba7` — updated across all active files.
+Includes: standard forecast package + Aviation Core + **Enterprise Hourly** (decimal precision).
+Enterprise Hourly = same model as standard TWC hourly, just decimal °F not rounded — logged as `twc_ent_hourly_snap/high/low` in forecast_logger as of 2026-03-22.
+Aviation Core is not useful for temperature trading. 15-min enterprise endpoint exists but is 401 on this key.
+
+---
 
 ## Active Project: Prediction Market Trading (started 2026-02-19)
 - **Platform**: Kalshi (live trading). Polymarket pending.
