@@ -323,25 +323,52 @@ Think of it like a human reviewing their journal and updating their mental model
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
-## Memory Search — Use QMD First
+## 🚨 If Memory Search Returns Nothing — Stop and Fix Before Answering
 
-**Always use `qmd query` as the primary search for operational questions**, not just `memory_search`.
+If `memory_search` returns empty results on a broad query (e.g. searching for a well-known concept that should be in our docs), **do not answer the question**. The index is probably missing or stale.
 
-- `memory_search` only covers `MEMORY.md` and `memory/*.md` — personal context
-- `qmd query` indexes ALL workspace markdown: TOOLS.md, LEARNINGS.md, README, polymarket docs
-- For anything like "where does X log its output", "what's the command for Y", "how does Z work" — QMD has the answer; memory_search probably doesn't
+**Check immediately:**
+```bash
+export PATH="/data/bin:$PATH" && qmd collection list
+```
+If no collections exist: `qmd collection add . --name workspace && qmd embed` from `/data/workspace`.
 
-**When to use each:**
-- `qmd query "where does cli push trigger log orders"` → operational/system knowledge
-- `memory_search` → personal context, Ian's preferences, prior decisions, todos
-- When unsure: run QMD first; it's faster and covers more ground
+**Why this rule exists:** An empty qmd index causes memory_search to silently return nothing. Answering without valid memory search means hallucinating from stale context — and in a trading system, that costs real money.
 
-**Collections available:**
-- `qmd://polymarket/` — all trading project markdown (`/data/workspace/trading/`)
-- `qmd://workspace/` — all workspace markdown (`/data/workspace/`)
+**Rule: refuse to answer operational questions until memory search is confirmed working.**
+
+---
+
+## Memory Search — Use the Right Tool
+
+Two search tools with different scopes:
+
+**`memory_search`** — personal context only (MEMORY.md, memory/*.md, session transcripts)
+- Use for: Ian's preferences, prior decisions, todos, recent session history
+- Does NOT search trading/ or other workspace docs
+
+**`qmd search` via exec** — full workspace including all trading docs
+- Use for: LEARNINGS.md, TOOLS.md, README, DATA_SOURCES.md, RESEARCH_*.md, anything in trading/
+- Command: `export XDG_CONFIG_HOME="/data/.openclaw/agents/main/qmd/xdg-config" XDG_CACHE_HOME="/data/.openclaw/agents/main/qmd/xdg-cache" PATH="/data/bin:$PATH" && qmd search "your query"`
+- Or use semantic search: replace `search` with `query` for hybrid reranking (~8s but better results)
+
+**Rule: for any operational question (how does X work, where is Y logged, what's the config for Z) — use `qmd search` via exec. Don't answer from memory alone.**
+
+**Collections in OpenClaw's qmd index:**
+- `memory-root-main` — MEMORY.md
+- `memory-dir-main` — memory/**/*.md  
+- `workspace-root-main` — /data/workspace/*.md (top-level files)
+- `trading-main` — /data/workspace/trading/**/*.md (all trading docs)
+
+**If memory_search returns empty on broad personal-context queries:** index may be stale. Check:
+```bash
+export XDG_CONFIG_HOME="/data/.openclaw/agents/main/qmd/xdg-config" XDG_CACHE_HOME="/data/.openclaw/agents/main/qmd/xdg-cache" PATH="/data/bin:$PATH"
+qmd collection list  # verify files > 0
+qmd update && qmd embed  # if files = 0
+```
 
 **Never state system state (orders placed, daemon running, logs clean) without first checking
-the correct source.** If unsure which log file to check, run `qmd query "<daemon name> log"` first.
+the correct source.** If unsure which log file to check, run `qmd search "<daemon name> log"` first.
 
 ## Keep README Current
 

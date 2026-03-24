@@ -18,12 +18,14 @@
 - **For logged-in sites**: use `--session-name` to save/restore cookies (Kalshi, etc.)
 
 ## qmd — Semantic Search
-- **Binary**: not available on Railway (macOS-only tool)
-- **Collections**: `workspace` (`/data/workspace/**/*.md`), `polymarket` (`/data/workspace/trading/**/*.md`)
+- **Binary**: `/data/bin/qmd` — available on Railway. Always use `export PATH="/data/bin:$PATH" XDG_CACHE_HOME=/data` before calling (index lives at `/data/qmd/`).
+- **Collections**: `workspace` (`/data/workspace/**/*.md`) — run `qmd collection list` to verify indexed
 - **Use instead of grep** for conceptual/decision searches
 - `qmd query "..."` — hybrid semantic + reranking (~8s, best results)
 - `qmd search "..."` — BM25 keyword only (instant, good for exact strings)
-- `qmd embed` — re-embed after adding new markdown files
+- `qmd embed` — re-embed after adding new markdown files (run from `/data/workspace`)
+- `qmd collection add . --name workspace` — re-index if collection is missing
+- **memory_search tool** is backed by qmd (confirmed in openclaw.json). If it returns empty on broad queries, check `qmd collection list` — index may need rebuilding.
 - See AGENTS.md for full usage guide
 
 ## Machine

@@ -6,6 +6,21 @@ All paths relative to `/data/workspace/trading/`. Logs: `forecast_logs/{script}-
 
 ---
 
+## qmd Index Refresh (once per day, ~noon ET)
+Keep memory_search working between deploys. Run if last refresh > 12h ago:
+```bash
+export XDG_CONFIG_HOME="/data/.openclaw/agents/main/qmd/xdg-config" XDG_CACHE_HOME="/data/.openclaw/agents/main/qmd/xdg-cache" PATH="/data/bin:$PATH"
+qmd update && qmd embed
+```
+Skip if already done today. Embed takes ~4s for a few new files.
+
+---
+
+## Config Validity (check every heartbeat)
+Call `gateway config.get` — if `valid: false`, ping Discord immediately with the issues list. A bad config blocks inbound message processing on all channels.
+
+---
+
 ## Active Sub-Agents (check every heartbeat)
 Run `sessions_list` with `activeMinutes=120`. For any active sub-agent:
 - Is it still running or has it completed without announcing?
@@ -92,7 +107,7 @@ tail -200 $LOG/cli_push_trigger-$(date +%Y-%m-%d).log | grep -i "error\|tracebac
 tail -200 $LOG/twc_morning_trader-$(date +%Y-%m-%d).log | grep -i "error\|traceback"
 ```
 
-**4. DB summary:** 7d P&L by model, any 0% win-rate bet types, stale pending trades (target_date < today)
+**4. DB summary:** 7d P&L by model, any 0% win-rate bet types, stale pending trades (entered_at < 48h ago AND still pending — use rolling window, NOT `date('now')` UTC which misses ET-day trades)
 
 **5. ALL_MODELS audit (weekly):** models in DB not in ALL_MODELS will never settle:
 ```bash
