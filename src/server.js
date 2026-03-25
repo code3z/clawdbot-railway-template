@@ -302,6 +302,30 @@ app.use(express.json({ limit: "1mb" }));
 // Minimal health endpoint for Railway.
 app.get("/setup/healthz", (_req, res) => res.json({ ok: true }));
 
+// Telnyx webhook — no auth required (Telnyx call events for OMO ASOS data collection)
+app.post("/webhooks/telnyx", (req, res) => {
+  try {
+    const body = req.body || {};
+    const eventType = body?.data?.event_type ?? "unknown";
+    const payload = body?.data?.payload ?? {};
+    const callControlId = payload?.call_control_id ?? "";
+    const callLegId = payload?.call_leg_id ?? "";
+    const entry = JSON.stringify({
+      ts: new Date().toISOString(),
+      event_type: eventType,
+      call_control_id: callControlId,
+      call_leg_id: callLegId,
+      payload,
+    });
+    const eventsFile = path.join(WORKSPACE_DIR, "trading", "telnyx_events.jsonl");
+    fs.appendFileSync(eventsFile, entry + "\n", "utf8");
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("[telnyx-webhook] error:", err?.message ?? err);
+    res.status(400).json({ ok: false, error: String(err?.message ?? err) });
+  }
+});
+
 async function probeGateway() {
   // Don't assume HTTP — the gateway primarily speaks WebSocket.
   // A simple TCP connect check is enough for "is it up".
